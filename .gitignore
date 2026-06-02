@@ -28,6 +28,7 @@ ENV/
 *.swo
 .cursor/
 .claude/
+.zed/
 .aider*
 
 # OS
