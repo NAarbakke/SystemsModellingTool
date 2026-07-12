@@ -2,9 +2,9 @@ import pandas as pd
 from plotting.plot_with_scienceplots import plot_station_properties as plot_scienceplots
 from plotting.plot_with_rcparams import plot_station_properties as plot_rcparams
 from plotting.plot_with_pgf import plot_station_properties as plot_pgf
-from propulsion.motors.helpers.gas_model import GasModel
-from propulsion.motors.liquid_fuel_turbofans import SingleSpoolOpenCycleLiquidFuelTurbofan
-from system_specifications.SKYF.engine import specs
+from subsystems.propulsion.motors.helpers.gas_model import GasModel
+from subsystems.propulsion.motors.turbofans.single_spool_open_cycle_liquid_fuel_turbofan import SingleSpoolOpenCycleLiquidFuelTurbofan
+from specifications.SKYF.engine import specs
 
 if __name__ == "__main__":
     gas = GasModel()

@@ -15,11 +15,11 @@ this script:
 import numpy as np
 import pandas as pd
 from dataclasses import replace
-from propulsion.motors.helpers.gas_model import GasModel
-from propulsion.motors.nuclear_fuel_turbofans import SingleSpoolClosedCycleNuclearTurbofan
-from propulsion.coolants.possible_coolants import FLUIDS
-from propulsion.motors.components.heat_exchangers import HeatExchanger
-from system_specifications.SKYF.engine import specs, HeatExchangerSpecs
+from subsystems.propulsion.motors.helpers.gas_model import GasModel
+from subsystems.propulsion.motors.turbofans.single_spool_closed_cycle_nuclear_fuel_turbofan import SingleSpoolClosedCycleNuclearTurbofan
+from subsystems.propulsion.coolants.possible_coolants import FLUIDS
+from subsystems.propulsion.motors.components.heat_exchangers.heat_exchangers import HeatExchanger
+from specifications.SKYF.engine import specs, HeatExchangerSpecs
 
 # ── Operating conditions (same as main_nuclear_engine.py) ──────────────
 M_CRUISE = 0.8
@@ -57,7 +57,7 @@ def check_temperature_feasibility(coolant_name, T_hot_in, T_hot_out_est):
 def estimate_T_hot_out(coolant_name, T_hot_in, P_hot, mdot_hot,
                        T_cold_in, T_cold_out, P_cold, mdot_cold):
     """Quick energy-balance estimate of coolant outlet temperature."""
-    from propulsion.motors.helpers.air_properties import air_properties
+    from subsystems.propulsion.motors.helpers.air_properties import air_properties
     cp_cold = air_properties(0.5 * (T_cold_in + T_cold_out), P_cold)["cp"]
     Q = mdot_cold * cp_cold * (T_cold_out - T_cold_in)
 
