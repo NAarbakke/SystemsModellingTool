@@ -19,7 +19,7 @@ from subsystems.propulsion.motors.helpers.gas_model import GasModel
 from subsystems.propulsion.motors.turbofans.single_spool_closed_cycle_nuclear_fuel_turbofan import SingleSpoolClosedCycleNuclearTurbofan
 from subsystems.propulsion.coolants.possible_coolants import FLUIDS
 from subsystems.propulsion.motors.components.heat_exchangers.heat_exchangers import HeatExchanger
-from specifications.SKYF.engine import specs, HeatExchangerSpecs
+from specifications.SKYF.engine import specs_closed_cycle_nuclear as specs
 
 # ── Operating conditions (same as main_nuclear_engine.py) ──────────────
 M_CRUISE = 0.8

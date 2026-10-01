@@ -1,7 +1,7 @@
 from subsystems.propulsion.motors.components.base_component import Component
 from subsystems.propulsion.motors.helpers.gas_model import GasModel
 from subsystems.propulsion.motors.helpers.flow_state import FlowState
-from specifications.SKYF.engine import FanSpecs
+from subsystems.propulsion.motors.components.compressors.fan_specs import FanSpecs
 import numpy as np
 
 

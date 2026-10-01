@@ -1,13 +1,13 @@
 from subsystems.propulsion.motors.helpers.gas_model import GasModel
 from subsystems.propulsion.motors.helpers.freestream_to_total import freestream_to_total
-from specifications.SKYF.engine import EngineSpecifications
+from subsystems.propulsion.motors.turbofans.single_spool_open_cycle_liquid_fuel_turbofan_specs import SingleSpoolOpenCycleLiquidFuelTurbofanSpecifications
 from subsystems.propulsion.motors.components.inlets.inlets import Inlet
 from subsystems.propulsion.motors.components.compressors.axial_compressor import AxialCompressor
 from subsystems.propulsion.motors.components.compressors.centrifugal_compressor import CentrifugalCompressor
 from subsystems.propulsion.motors.components.compressors.fan import Fan
 from subsystems.propulsion.motors.components.splitters.splitters import CoreSplitter, BypassSplitter
 from subsystems.propulsion.motors.components.combustors.combustor import Combustor
-from subsystems.propulsion.motors.components.turbines.turbines import AxialTurbine
+from subsystems.propulsion.motors.components.turbines.axial_turbine import AxialTurbine
 from subsystems.propulsion.motors.components.ducting.ducting import Duct
 from subsystems.propulsion.motors.components.nozzles.nozzles import ConvergentNozzle
 
@@ -42,7 +42,7 @@ class SingleSpoolOpenCycleLiquidFuelTurbofan:
     Station 9: bypass nozzle exit (throat (and ambient if ideally expanded))
     """
 
-    def __init__(self, gas: GasModel, specs: EngineSpecifications, P_atm: float):
+    def __init__(self, gas: GasModel, specs: SingleSpoolOpenCycleLiquidFuelTurbofanSpecifications, P_atm: float):
         self.gas = gas
         self.bypass_ratio = specs.bypass_ratio
         self.r_fan_tip = specs.fan.r_tip

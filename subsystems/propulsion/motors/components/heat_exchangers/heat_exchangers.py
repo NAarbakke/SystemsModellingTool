@@ -44,12 +44,12 @@ basic logic above still applies, just segment by segment.
 
 import numpy as np
 from dataclasses import dataclass
-from materials.hx_walls.possible_materials import WALLS
+from properties.materials.hx_walls.possible_materials import WALLS
 from subsystems.propulsion.coolants.possible_coolants import FLUIDS
 from subsystems.propulsion.motors.components.base_component import Component
 from subsystems.propulsion.motors.helpers.flow_state import FlowState
 from subsystems.propulsion.motors.helpers.gas_model import GasModel
-from specifications.SKYF.engine import HeatExchangerSpecs
+from subsystems.propulsion.motors.components.heat_exchangers.heat_exchanger_specs import HeatExchangerSpecs
 
 
 def compute_h(fluid_props, mdot, n_channels, D_h):

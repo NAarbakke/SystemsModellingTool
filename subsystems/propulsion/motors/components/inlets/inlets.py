@@ -1,6 +1,7 @@
 from subsystems.propulsion.motors.components.base_component import Component
 from subsystems.propulsion.motors.helpers.flow_state import FlowState
 from subsystems.propulsion.motors.helpers.gas_model import GasModel
+from subsystems.propulsion.motors.components.inlets.inlet_specs import InletSpecs
 
 
 class Inlet(Component):

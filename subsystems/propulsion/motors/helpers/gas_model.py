@@ -24,5 +24,9 @@ class GasModel:
         gamma = cp / cv
         return gamma
 
+    def a(self) -> float:
+        a = 340.29  #at sea level for now, later consider altitude
+        return a
+
     # def c_p_exhaust(self, T: float, f: float) -> float:
     # not cea

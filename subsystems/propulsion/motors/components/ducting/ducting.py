@@ -1,7 +1,7 @@
 from subsystems.propulsion.motors.components.base_component import Component
 from subsystems.propulsion.motors.helpers.gas_model import GasModel
 from subsystems.propulsion.motors.helpers.flow_state import FlowState
-from specifications.SKYF.engine import DuctSpecs
+from subsystems.propulsion.motors.components.ducting.duct_specs import DuctSpecs
 
 class Duct(Component):
     def __init__(self, specs: DuctSpecs, gas_model: GasModel, name: str = "duct"):

@@ -2,7 +2,7 @@ from subsystems.propulsion.motors.components.base_component import Component
 from subsystems.propulsion.motors.helpers.gas_model import GasModel
 from subsystems.propulsion.motors.helpers.flow_state import FlowState
 from subsystems.propulsion.motors.components.turbines.stage import TurbineStage
-from specifications.SKYF.engine import TurbineSpecs
+from subsystems.propulsion.motors.components.turbines.axial_turbine_specs import AxialTurbineSpecs
 
 #add stage length stuff
 
@@ -41,7 +41,7 @@ class Turbine2(Component):
 
 
 class AxialTurbine(Component):
-    def __init__(self, specs: TurbineSpecs, gas_model: GasModel, fan: "Fan" = None, compressor: "Compressor" = None, name: str = ""):
+    def __init__(self, specs: AxialTurbineSpecs, gas_model: GasModel, fan: "Fan" = None, compressor: "Compressor" = None, name: str = ""):
         super().__init__(gas_model, name)
         self.eta_poly = specs.eta_poly
         self.eta_mech = specs.eta_mech

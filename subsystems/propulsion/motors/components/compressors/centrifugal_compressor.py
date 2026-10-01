@@ -1,11 +1,11 @@
 from subsystems.propulsion.motors.components.base_component import Component
 from subsystems.propulsion.motors.helpers.gas_model import GasModel
 from subsystems.propulsion.motors.helpers.flow_state import FlowState
-from specifications.SKYF.engine import CompressorSpecs
+from subsystems.propulsion.motors.components.compressors.centrifugal_compressor_specs import CentrifugalCompressorSpecs
 
 
 class CentrifugalCompressor(Component):
-    def __init__(self, specs: CompressorSpecs, gas_model: GasModel, name: str = ""):
+    def __init__(self, specs: CentrifugalCompressorSpecs, gas_model: GasModel, name: str = ""):
         super().__init__(gas_model, name)
         self.PR = specs.PR
         self.eta_poly = specs.eta_poly

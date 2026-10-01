@@ -3,7 +3,7 @@ import numpy as np
 from subsystems.propulsion.motors.components.base_component import Component
 from subsystems.propulsion.motors.helpers.flow_state import FlowState
 from subsystems.propulsion.motors.helpers.gas_model import GasModel
-from specifications.SKYF.engine import ReactorSpecs
+from subsystems.propulsion.motors.components.reactors.fast_neutron_reactor_specs import FastNeutronReactorSpecs
 
 
 class FastNeutronReactor(Component):
@@ -28,7 +28,7 @@ class FastNeutronReactor(Component):
         - (room for fuel centreline temperature check later)
     """
 
-    def __init__(self, specs: ReactorSpecs, gas_model: GasModel, name: str = "reactor"):
+    def __init__(self, specs: FastNeutronReactorSpecs, gas_model: GasModel, name: str = "reactor"):
         super().__init__(gas_model, name)
         self.T_tet = specs.T_tet
         self.PR_loss = specs.PR_loss

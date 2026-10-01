@@ -1,3 +1,31 @@
+# Axial compressor: component-owned Specs / Geometry / Sizing
+
+Decision (user, 2026-10-01): templates live with the component, values live in `specifications/SKYF/`.
+Imports flow one way: `specifications/` → `subsystems/`, never back.
+
+## Plan
+- [x] `axial_compressor_specs.py`: `AxialCompressorSpecs` (PR, eta_poly, phi, psi, U_tip), no defaults
+- [x] `axial_compressor_geometry.py`: inputs only (radii, aspect ratios, IGV/EGV chords); span, chords, r_mean as derived properties
+- [x] `axial_compressor_sizing.py`: `AxialCompressorSizing` result (U_mean, V_axial, M_rel_tip, n_stages, L_stage, L)
+- [x] `axial_compressor.py`: import from the three files above (no `specifications` import), module-level sketch folded into `compute_geometry()`, stubs made valid
+- [x] `specifications/SKYF/engine.py`: drop circular import, open-cycle spec gets `AxialCompressorSpecs` + `AxialCompressorGeometry` values
+- [x] Open-cycle nuclear turbofan passes geometry to `AxialCompressor`
+- [x] Verify: `main_nuclear_engine.py` and `main_open_cycle_nuclear_engine.py` run in `.venv`; `compute_geometry()` returns sane numbers
+
+## Review
+- Circular import gone: no component imports `specifications/` for the axial compressor; `engine.py` imports the templates.
+- `main_nuclear_engine.py` runs end to end (F_total 49.9 kN). Also needed a stale-path fix in `heat_exchangers.py`
+  (`materials.` → `properties.materials.`, left over from the restructure).
+- Open-cycle engine: `run_point()` runs; sizing at cruise → U_mean 262 m/s, V_axial 131 m/s, M_rel_tip 1.09, 4 stages, L 0.76 m.
+  `main_open_cycle_nuclear_engine.py` then stops in the pgf plot: LaTeX package `underscore.sty` isn't installed (TeX setup, not code).
+- Missing spec values raise TypeError (no defaults) — verified.
+- SKYF compressor geometry values are placeholders (r_tip 0.30, r_hub 0.15, AR 2.0/2.5, IGV/EGV 0.04 m).
+
+## Deferred
+- `CentrifugalCompressor` and other components still import their specs from `specifications/SKYF/engine.py` — same pattern can be applied.
+
+---
+
 # Engine station dashboard (graphics/)
 
 Decisions (user, 2026-09-11): static Plotly HTML (no new deps); use an existing engine — the turbojet file is

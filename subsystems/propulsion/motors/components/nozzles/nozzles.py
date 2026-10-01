@@ -3,7 +3,7 @@ from numpy.matlib import sqrt
 from subsystems.propulsion.motors.components.base_component import Component
 from subsystems.propulsion.motors.helpers.gas_model import GasModel
 from subsystems.propulsion.motors.helpers.flow_state import FlowState
-from specifications.SKYF.engine import CoreNozzleSpecs, BypassNozzleSpecs
+from subsystems.propulsion.motors.components.nozzles.convergent_nozzle_specs import ConvergentNozzleSpecs
 
 
 #class ConvergentDivergentNozzle:
@@ -17,7 +17,7 @@ class ConvergentNozzle(Component):
     Simple convergent nozzle with isentropic efficiency.
     """
 
-    def __init__(self, specs: CoreNozzleSpecs | BypassNozzleSpecs, P_atm: float, gas_model: GasModel, name: str = "convergent nozzle"):
+    def __init__(self, specs: ConvergentNozzleSpecs, P_atm: float, gas_model: GasModel, name: str = "convergent nozzle"):
         super().__init__(gas_model, name)
         self.eta_isen = specs.eta_isen
         self.thoat_area = specs.area
