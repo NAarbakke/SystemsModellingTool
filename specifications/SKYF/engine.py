@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from subsystems.propulsion.motors.components.compressors.axial_compressor import CompressorGeometry
 
 
 @dataclass
@@ -82,6 +83,19 @@ class ReactorSpecs:
 
 
 @dataclass
+class EngineSpecifications:
+    bypass_ratio: float = 2.0
+    inlet: InletSpecs = field(default_factory=InletSpecs)
+    fan: FanSpecs = field(default_factory=FanSpecs)
+    compressor: CompressorSpecs = field(default_factory=CompressorSpecs)
+    combustor: CombustorSpecs = field(default_factory=CombustorSpecs)
+    turbine: TurbineSpecs = field(default_factory=TurbineSpecs)
+    core_nozzle: CoreNozzleSpecs = field(default_factory=CoreNozzleSpecs)
+    bypass_duct: DuctSpecs = field(default_factory=DuctSpecs)
+    bypass_nozzle: BypassNozzleSpecs = field(default_factory=BypassNozzleSpecs)
+
+
+@dataclass
 class SingleSpoolClosedCycleNuclearTurbofanSpecifications:
     bypass_ratio: float = 2.0
     inlet: InletSpecs = field(default_factory=InletSpecs)
@@ -108,4 +122,9 @@ class SingleSpoolOpenCycleNuclearTurbofanSpecifications:
     bypass_nozzle: BypassNozzleSpecs = field(default_factory=BypassNozzleSpecs)
 
 
-specs_open_cycle = SingleSpoolClosedCycleNuclearTurbofanSpecifications()
+specs = EngineSpecifications()
+specs_closed_cycle_nuclear = SingleSpoolClosedCycleNuclearTurbofanSpecifications()
+specs_open_cycle_nuclear = SingleSpoolOpenCycleNuclearTurbofanSpecifications()
+specs_compressor_geometry = CompressorGeometry(
+    ###
+)

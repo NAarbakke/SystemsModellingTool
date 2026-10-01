@@ -5,7 +5,7 @@
 - If something goes sideways, STOP and re-plan immediately – don't keep pushing
 - Use plan mode for verification steps, not just building
 - Write detailed specs upfront to reduce ambiguity
-- Before starting a new task, check always reference documentation in `documentation/codebase` to understand codebase architecture and conventions.
+- Before starting a new task, check always reference documentation in `docs/codebase` to understand codebase architecture and conventions.
 
 ## 2. Subagent Strategy
 - Use subagents liberally to keep main context window clean
@@ -14,7 +14,7 @@
 - One tack per subagent for focused execution
 
 ## 3. Self-Improvement Loop
-- After ANY correction from the user: update `workflow/tasks/lessons.md` with the pattern
+- After ANY correction from the user: update `docs/workflow/lessons.md` with the pattern
 - Write rules for yourself that prevent the same mistake
 - Ruthlessly iterate on these lessons until mistake rate drops
 - Review lessons at session start for relevant project
@@ -42,12 +42,12 @@
 
 # Task Management
 
-1. **Plan First**: Write plan to `workflow/tasks/todo.md` with checkable items.
+1. **Plan First**: Write plan to `docs/workflow/todo.md` with checkable items.
 2. **Verify Plan**: Check in before starting implementation
 3. **Track Progress**: Mark items complete as you go
 4. **Explain Changes**: High-level summary at each step
-5. **Document Results**: Add review section to `workflow/tasks/todo.md`
-6. **Capture Lessons**: Update `workflow/tasks/lessons.md` after corrections
+5. **Document Results**: Add review section to `docs/workflow/todo.md`
+6. **Capture Lessons**: Update `docs/workflow/lessons.md` after corrections
 
 ---
 
@@ -60,17 +60,17 @@
 
 
 # Project Context
-Architecture: @documentation/codebase/architecture.md
-Conventions: @documentation/codebase/conventions.md
+Architecture: @docs/codebase/architecture.md
+Conventions: @docs/codebase/conventions.md
 
 # Accumulated Lessons
-@workflow/tasks/lessons.md
+@docs/workflow/lessons.md
 
 # Task Workflow
-1. Write plan to `workflow/tasks/todo.md` with checkable items
+1. Write plan to `docs/workflow/todo.md` with checkable items
 2. Verify with user before implementing
 3. Mark items complete as you progress
-4. After any user correction, append the lesson to `workflow/tasks/lessons.md`
+4. After any user correction, append the lesson to `docs/workflow/lessons.md`
 
 
 ## Project Specific Guidelines

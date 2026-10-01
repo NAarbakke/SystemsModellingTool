@@ -2,7 +2,8 @@ from subsystems.propulsion.motors.helpers.gas_model import GasModel
 from subsystems.propulsion.motors.helpers.freestream_to_total import freestream_to_total
 from specifications.SKYF.engine import SingleSpoolClosedCycleNuclearTurbofanSpecifications
 from subsystems.propulsion.motors.components.inlets.inlets import Inlet
-from subsystems.propulsion.motors.components.compressors.compressors import CentrifugalCompressor, Fan
+from subsystems.propulsion.motors.components.compressors.centrifugal_compressor import CentrifugalCompressor
+from subsystems.propulsion.motors.components.compressors.fan import Fan
 from subsystems.propulsion.motors.components.splitters.splitters import CoreSplitter, BypassSplitter
 from subsystems.propulsion.motors.components.heat_exchangers.heat_exchangers import HeatExchangerComponent
 from subsystems.propulsion.motors.components.turbines.turbines import AxialTurbine

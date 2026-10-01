@@ -1,7 +1,7 @@
 import pandas as pd
 from subsystems.propulsion.motors.helpers.gas_model import GasModel
 from subsystems.propulsion.motors.turbofans.single_spool_closed_cycle_nuclear_fuel_turbofan import SingleSpoolClosedCycleNuclearTurbofan
-from specifications.SKYF.engine import specs
+from specifications.SKYF.engine import specs_closed_cycle_nuclear as specs
 
 if __name__ == "__main__":
     gas = GasModel()

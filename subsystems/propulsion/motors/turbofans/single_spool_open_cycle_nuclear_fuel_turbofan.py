@@ -4,10 +4,10 @@ from specifications.SKYF.engine import (
     SingleSpoolClosedCycleNuclearTurbofanSpecifications,
     SingleSpoolOpenCycleNuclearTurbofanSpecifications)  #or import specs_open_cycle
 from subsystems.propulsion.motors.components.inlets.inlets import Inlet
-from subsystems.propulsion.motors.components.compressors.compressors import CentrifugalCompressor, AxialCompressor, Fan
+from subsystems.propulsion.motors.components.compressors.axial_compressor import AxialCompressor
+from subsystems.propulsion.motors.components.compressors.fan import Fan
 from subsystems.propulsion.motors.components.splitters.splitters import CoreSplitter, BypassSplitter
-from subsystems.propulsion.motors.components.heat_exchangers.heat_exchangers import HeatExchangerComponent
-from subsystems.propulsion.motors.components.reactors.reactors import FastNeutronReactor
+from subsystems.propulsion.motors.components.reactors.fast_neutron_reactor import FastNeutronReactor
 from subsystems.propulsion.motors.components.turbines.turbines import AxialTurbine
 from subsystems.propulsion.motors.components.ducting.ducting import Duct
 from subsystems.propulsion.motors.components.nozzles.nozzles import ConvergentNozzle
@@ -27,7 +27,7 @@ class SingleSpoolOpenCycleNuclearTurbofan:
         self.fan = Fan(specs.fan, gas, name="fan")
         self.core_splitter = CoreSplitter(specs.bypass_ratio, gas, name="core_splitter")
         self.bypass_splitter = BypassSplitter(specs.bypass_ratio, gas, name="bypass_splitter")
-        self.compressor = CentrifugalCompressor(specs.compressor, gas, name="compressor")
+        self.compressor = AxialCompressor(specs.compressor, gas, name=" Axial compressor")
         self.reactor = FastNeutronReactor(specs.reactor, gas, name="reactor")
         self.turbine = AxialTurbine(specs.turbine, gas, self.fan, self.compressor, name="turbine")
         self.core_nozzle = ConvergentNozzle(specs.core_nozzle, P_atm, gas, name="core nozzle")

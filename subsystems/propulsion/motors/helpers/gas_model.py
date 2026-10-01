@@ -25,4 +25,4 @@ class GasModel:
         return gamma
 
     # def c_p_exhaust(self, T: float, f: float) -> float:
-    # cea
+    # not cea

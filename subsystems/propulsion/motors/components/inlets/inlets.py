@@ -1,9 +1,6 @@
 from subsystems.propulsion.motors.components.base_component import Component
 from subsystems.propulsion.motors.helpers.flow_state import FlowState
 from subsystems.propulsion.motors.helpers.gas_model import GasModel
-from specifications.SKYF.engine import InletSpecs
-
-# class SupersonicInlet(Component):
 
 
 class Inlet(Component):
