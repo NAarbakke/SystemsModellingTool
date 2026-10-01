@@ -23,6 +23,21 @@ docs/               Architecture, conventions, and theory documentation
 workflow/           Task planning notes (todo.md, lessons.md)
 ```
 
+## Setup
+
+Dependencies are listed in **`documentation/requirements.txt`** and are installed
+into a project-local virtual environment (`.venv/`, gitignored), never into the
+system Python. From the repository root (Windows):
+
+```
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r documentation/requirements.txt
+```
+
+In VS Code, pick `.venv` via *Python: Select Interpreter*. When you add a
+package, install it into `.venv` and add it to `documentation/requirements.txt`.
+
 ## Running
 
 Entry-point scripts live at the repo root, e.g.:

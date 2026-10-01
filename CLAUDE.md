@@ -72,6 +72,14 @@ Conventions: @docs/codebase/conventions.md
 3. Mark items complete as you progress
 4. After any user correction, append the lesson to `docs/workflow/lessons.md`
 
+# Setup
+- Dependencies: `documentation/requirements.txt` (the only requirements file - don't create another one)
+- Environment: `.venv/` at the repo root (gitignored). Never `pip install` into the system Python.
+  - Create: `python -m venv .venv`
+  - Install: `.venv/Scripts/python -m pip install -r documentation/requirements.txt`
+  - Run scripts from the repo root with `.venv/Scripts/python <script>.py`
+- New package → install into `.venv` and add it to `documentation/requirements.txt`
+
 
 ## Project Specific Guidelines
 

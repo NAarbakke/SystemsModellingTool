@@ -115,6 +115,6 @@ class AxialCompressor(Component):
         return r_mean - h / 2, r_mean + h / 2
 
     def constant_hub_radius(self, A: float) -> tuple[float, float]:
-        r_hub = self.geometry.r_hub_inlet
+        r_hub = self.geometry.r_hub
         r_tip = np.sqrt(r_hub**2 + A / np.pi)
         return r_hub, r_tip
