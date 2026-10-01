@@ -11,7 +11,7 @@ class AxialCompressorGeometry:
     """
     annulus_type: AnnulusType       # [-] which radius is held constant through the compressor
     r_tip: float                    # [m] inlet tip radius
-    r_hub_inlet: float              # [m] inlet hub radius
+    r_hub: float                    # [m] inlet hub radius
     AR_rotor: float                 # [-] rotor blade aspect ratio = h / c
     AR_stator: float                # [-] stator blade aspect ratio = h / c
     IGV_axial_chord_length: float   # [m] inlet guide vane axial chord
@@ -21,16 +21,16 @@ class AxialCompressorGeometry:
     # Derived - computed from the inputs above so they can never disagree
     @property
     def r_mean(self) -> float:
-        return (self.r_tip + self.r_hub_inlet) / 2
+        return (self.r_tip + self.r_hub) / 2
 
     @property
     def hub_to_tip(self) -> float:
-        return self.r_hub_inlet / self.r_tip    # 0.4 - 0.6 at front stage ish
+        return self.r_hub / self.r_tip    # 0.4 - 0.6 at front stage ish
 
     @property
     def h(self) -> float:
         """Blade span at inlet [m]"""
-        return self.r_tip - self.r_hub_inlet
+        return self.r_tip - self.r_hub
 
     @property
     def c_rotor(self) -> float:

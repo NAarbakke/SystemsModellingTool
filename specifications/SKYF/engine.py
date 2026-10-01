@@ -36,7 +36,7 @@ axial_compressor = AxialCompressorSpecs(
     U_tip=350.0)        # [m/s]
 
 axial_compressor_geometry = AxialCompressorGeometry(   # placeholder values
-    annulus_type=AnnulusType.CONSTANT_TIP,
+    annulus_type=AnnulusType.CONSTANT_TIP,  #minimises compressor length
     r_tip=0.30,                     # [m]
     r_hub_inlet=0.15,               # [m]
     AR_rotor=2.0,
