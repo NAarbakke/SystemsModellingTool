@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class InletSpecs:
+class SubsonicInletSpecs:
     """
     No defaults: values come from a vehicle specification (e.g. specifications/SKYF/engine.py).
     """

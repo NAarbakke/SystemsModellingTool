@@ -13,6 +13,7 @@ class CoreSplitter(Component):
         Tt_in = flow.Tt
         Pt_in = flow.Pt
         rho_in = flow.rho
+        rho_t_in = flow.rho_t
         V_in = flow.V
         m_dot_in = flow.m_dot
 
@@ -23,6 +24,7 @@ class CoreSplitter(Component):
             Tt=Tt_in,
             Pt=Pt_in,
             rho=rho_in,
+            rho_t=rho_t_in,
             V=V_in,
             m_dot=m_dot_core)
 
@@ -40,6 +42,7 @@ class BypassSplitter(Component):
         Tt_in = flow.Tt
         Pt_in = flow.Pt
         rho_in = flow.rho
+        rho_t_in = flow.rho_t
         V_in = flow.V
         m_dot_in = flow.m_dot
 
@@ -50,6 +53,7 @@ class BypassSplitter(Component):
             Tt=Tt_in,
             Pt=Pt_in,
             rho=rho_in,
+            rho_t=rho_t_in,
             V=V_in,
             m_dot=m_dot_bypass)
 

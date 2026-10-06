@@ -1,7 +1,7 @@
 from subsystems.propulsion.motors.helpers.gas_model import GasModel
 from subsystems.propulsion.motors.helpers.freestream_to_total import freestream_to_total
 from subsystems.propulsion.motors.turbofans.single_spool_open_cycle_liquid_fuel_turbofan_specs import SingleSpoolOpenCycleLiquidFuelTurbofanSpecifications
-from subsystems.propulsion.motors.components.inlets.inlets import Inlet
+from subsystems.propulsion.motors.components.inlets.subsonic_inlet import SubsonicInlet
 from subsystems.propulsion.motors.components.compressors.axial_compressor import AxialCompressor
 from subsystems.propulsion.motors.components.compressors.centrifugal_compressor import CentrifugalCompressor
 from subsystems.propulsion.motors.components.compressors.fan import Fan
@@ -9,7 +9,7 @@ from subsystems.propulsion.motors.components.splitters.splitters import CoreSpli
 from subsystems.propulsion.motors.components.combustors.combustor import Combustor
 from subsystems.propulsion.motors.components.turbines.axial_turbine import AxialTurbine
 from subsystems.propulsion.motors.components.ducting.ducting import Duct
-from subsystems.propulsion.motors.components.nozzles.nozzles import ConvergentNozzle
+from subsystems.propulsion.motors.components.nozzles.convergent_nozzle import ConvergentNozzle
 
 
 class SingleSpoolOpenCycleLiquidFuelTurbofan:
@@ -47,11 +47,11 @@ class SingleSpoolOpenCycleLiquidFuelTurbofan:
         self.bypass_ratio = specs.bypass_ratio
         self.r_fan_tip = specs.fan.r_tip
         self.r_fan_hub = specs.fan.r_hub
-        self.area_noz_core = specs.core_nozzle.area
-        self.area_noz_bypass = specs.bypass_nozzle.area
+        self.A_noz_core = specs.core_nozzle.A_exit
+        self.A_noz_bypass = specs.bypass_nozzle.A_exit
 
         #---- Components ----#
-        self.inlet = Inlet(specs.inlet, gas, name="inlet")
+        self.inlet = SubsonicInlet(specs.subsonic_inlet, gas, name="inlet")
         self.fan = Fan(specs.fan, gas, name="fan")
         self.core_splitter = CoreSplitter(specs.bypass_ratio, gas, name="core_splitter")
         self.bypass_splitter = BypassSplitter(specs.bypass_ratio, gas, name="bypass_splitter")
@@ -119,8 +119,8 @@ class SingleSpoolOpenCycleLiquidFuelTurbofan:
         # for deLaval, lambda approaches 1, maybe 0.99
 
         # Thrust contributions
-        F_core = m_dot_core * (V_exit_core - V_0) + (P_exit_core - P_0) * self.area_noz_core
-        F_bypass = m_dot_bypass * (V_exit_bypass - V_0) + (P_exit_bypass - P_0) * self.area_noz_bypass
+        F_core = m_dot_core * (V_exit_core - V_0) + (P_exit_core - P_0) * self.A_noz_core
+        F_bypass = m_dot_bypass * (V_exit_bypass - V_0) + (P_exit_bypass - P_0) * self.A_noz_bypass
         F_total = F_core + F_bypass
 
         Power = F_total * V_0   #compare to turbine power? should they be equal?

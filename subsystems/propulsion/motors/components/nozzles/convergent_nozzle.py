@@ -6,10 +6,6 @@ from subsystems.propulsion.motors.helpers.flow_state import FlowState
 from subsystems.propulsion.motors.components.nozzles.convergent_nozzle_specs import ConvergentNozzleSpecs
 
 
-#class ConvergentDivergentNozzle:
-
-#class DeLavalNozzle:
-
 
 
 class ConvergentNozzle(Component):
@@ -20,8 +16,8 @@ class ConvergentNozzle(Component):
     def __init__(self, specs: ConvergentNozzleSpecs, P_atm: float, gas_model: GasModel, name: str = "convergent nozzle"):
         super().__init__(gas_model, name)
         self.eta_isen = specs.eta_isen
-        self.thoat_area = specs.area
-        self.exit_area = specs.area
+        self.A_throat = specs.A_exit
+        self.A_exit = specs.A_exit
         self.C_discharge = specs.C_discharge
         self.P_atm = P_atm
 
@@ -70,7 +66,7 @@ class ConvergentNozzle(Component):
 
         rho_exit = P_exit / (R * T_exit)
         #A_needed = m_dot / (rho_exit * V_exit)
-        # You can compare A_needed vs self.area for consistency
+        # You can compare A_needed vs self.A_exit for consistency
         m_dot_actual = self.C_discharge * flow.m_dot
 
         out = FlowState(

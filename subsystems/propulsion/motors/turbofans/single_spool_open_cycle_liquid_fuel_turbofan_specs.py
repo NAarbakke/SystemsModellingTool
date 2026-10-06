@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from subsystems.propulsion.motors.components.inlets.inlet_specs import InletSpecs
+from subsystems.propulsion.motors.components.inlets.subsonic_inlet_specs import SubsonicInletSpecs
 from subsystems.propulsion.motors.components.compressors.fan_specs import FanSpecs
 from subsystems.propulsion.motors.components.compressors.centrifugal_compressor_specs import CentrifugalCompressorSpecs
 from subsystems.propulsion.motors.components.combustors.combustor_specs import CombustorSpecs
@@ -14,7 +14,7 @@ class SingleSpoolOpenCycleLiquidFuelTurbofanSpecifications:
     No defaults: values come from a vehicle specification (e.g. specifications/SKYF/engine.py).
     """
     bypass_ratio: float                     # [-]
-    inlet: InletSpecs
+    subsonic_inlet: SubsonicInletSpecs
     fan: FanSpecs
     compressor: CentrifugalCompressorSpecs
     combustor: CombustorSpecs

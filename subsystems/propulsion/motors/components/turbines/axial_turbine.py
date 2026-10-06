@@ -57,7 +57,7 @@ class AxialTurbine(Component):
         cp = self.gas.cp(Tt_in)
         gamma = self.gas.gamma(Tt_in)
 
-        fan_work = self.fan.last_work_per_kg
+        fan_work = self.fan.last_work_per_kg if self.fan else 0.0   # turbojet: no fan
         compressor_work = self.compressor.last_work_per_kg
         turbine_work = (fan_work + compressor_work) / self.eta_mech
 
