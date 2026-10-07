@@ -1,0 +1,10 @@
+# Streamlit reads this from the directory it is started in (the repo root). Colours match graphics/theme.py.
+[theme]
+base = "dark"
+backgroundColor = "#0d0d0d"
+secondaryBackgroundColor = "#1a1a19"
+primaryColor = "#3987e5"
+textColor = "#ffffff"
+
+[browser]
+gatherUsageStats = false

@@ -80,6 +80,10 @@ Conventions: @docs/codebase/conventions.md
   - Run scripts from the repo root with `.venv/Scripts/python <script>.py`
 - New package → install into `.venv` and add it to `documentation/requirements.txt`
 
+# Dashboards
+- Engine dashboards live in `interface/gui/`, named after the engine: `<engine>_dashboard_static.py` (writes HTML) and `<engine>_dashboard.py` (Streamlit, live inputs).
+- Drawing code is in `graphics/` (engine and compressor illustrations, `theme.py`), plots in `plotting/`, page assembly in `interface/gui/dashboard_view.py`.
+
 
 ## Project Specific Guidelines
 

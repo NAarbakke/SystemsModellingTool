@@ -66,12 +66,14 @@ class AxialCompressor(Component):
         omega = specs.U_tip / geometry.r_tip                    # [rad/s] shaft speed, set by the inlet tip speed
 
         Tt = Tt_in
-        L_stage = []
+        L_stage, r_hub_stage, r_tip_stage = [], [], []
         while Tt - Tt_in < delta_Tt_comp:
             # Annulus at stage entry
             A = geometry.A_inlet * (Tt / Tt_in) ** (1 - gamma * self.eta_poly / (gamma - 1))
             r_hub, r_tip = self.solve_annulus(A)
             h = r_tip - r_hub
+            r_hub_stage.append(float(r_hub))
+            r_tip_stage.append(float(r_tip))
 
             # Stage = rotor + gap + stator + gap, chords from the local blade span
             c_rotor = h / geometry.AR_rotor
@@ -87,6 +89,8 @@ class AxialCompressor(Component):
         out = AxialCompressorSizing(
             n_stages=len(L_stage),
             L_stage=L_stage,
+            r_hub_stage=r_hub_stage,
+            r_tip_stage=r_tip_stage,
             L=L)
 
         return out

@@ -51,6 +51,14 @@ python evaluate_coolants.py
 Run them from the repository root so the `subsystems`/`specifications`
 namespace packages resolve correctly.
 
+Engine dashboards (a to-scale engine drawing with flow plots underneath) live
+in `interface/gui/`, named after their engine:
+
+```
+.venv\Scripts\python -m interface.gui.<engine>_dashboard_static                 (writes an HTML file)
+.venv\Scripts\python -m streamlit run interface/gui/<engine>_dashboard.py       (live page with inputs)
+```
+
 ## Status
 
 Under active development. Several entry-point scripts currently reference
