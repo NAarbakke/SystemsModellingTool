@@ -33,7 +33,7 @@ centrifugal_compressor = CentrifugalCompressorSpecs(
 axial_compressor = AxialCompressorSpecs(
     PR=2.0,
     eta_poly=0.90,
-    phi=0.35,
+    psi=0.35,
     U_tip=350.0)        # [m/s]
 
 axial_compressor_geometry = AxialCompressorGeometry(   # placeholder values

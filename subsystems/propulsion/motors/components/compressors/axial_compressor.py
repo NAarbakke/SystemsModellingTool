@@ -23,15 +23,13 @@ class AxialCompressor(Component):
         self.geometry = geometry
         self.PR = specs.PR
         self.eta_poly = specs.eta_poly
-        self.v = geometry.hub_to_tip       
-        self.A_inlet = np.pi * geometry.r_tip**2 * (1 - self.v**2)
 
     def process(self, flow: FlowState) -> FlowState:
         self.last_inlet = flow
         Tt_in = flow.Tt
         Pt_in = flow.Pt
         m_dot = flow.m_dot
-        #m_dot_in = flow.rho * self.A_inlet * V_axial   # once V_axial comes from the annulus
+        #m_dot_in = flow.rho * self.geometry.A_inlet * V_axial   # once V_axial comes from the annulus
 
         cp_in = self.gas.cp(Tt_in)
         gamma = self.gas.gamma(Tt_in)
@@ -66,13 +64,12 @@ class AxialCompressor(Component):
         cp = self.gas.cp(Tt_in)
         gamma = self.gas.gamma(Tt_in)
         omega = specs.U_tip / geometry.r_tip                    # [rad/s] shaft speed, set by the inlet tip speed
-        area_exponent = 1 - gamma * self.eta_poly / (gamma - 1)     # A/A_in = (Tt/Tt_in)^area_exponent
 
         Tt = Tt_in
         L_stage = []
         while Tt - Tt_in < delta_Tt_comp:
             # Annulus at stage entry
-            A = self.A_inlet * (Tt / Tt_in) ** area_exponent
+            A = geometry.A_inlet * (Tt / Tt_in) ** (1 - gamma * self.eta_poly / (gamma - 1))
             r_hub, r_tip = self.solve_annulus(A)
             h = r_tip - r_hub
 
@@ -83,7 +80,7 @@ class AxialCompressor(Component):
 
             # Stage temperature rise from the stage loading coefficient at the local mean radius
             U_mean = omega * (r_hub + r_tip) / 2
-            Tt += specs.phi * U_mean**2 / cp
+            Tt += specs.psi * U_mean**2 / cp
 
         L = float(sum(L_stage)) + geometry.IGV_axial_chord_length + geometry.EGV_axial_chord_length
 

@@ -32,7 +32,7 @@ class SingleSpoolOpenCycleNuclearTurbojet:
         flow_state_1 = self.inlet.process(flow_state_0)
 
         # Mass flow set by the compressor face (no fan upstream to set it)
-        m_dot = flow_state_1.rho * self.compressor.A_inlet * flow_state_1.V
+        m_dot = flow_state_1.rho * self.compressor.geometry.A_inlet * flow_state_1.V
         flow_state_1 = replace(flow_state_1, m_dot=m_dot)
 
         # Station 3: Compressor -> Reactor
