@@ -1,3 +1,21 @@
+# Remove all plotting (Plotly, matplotlib); the React dashboard is the only drawing
+
+User (2026-10-17): remove plotting from all scripts, including Plotly.
+
+- [x] Delete `plotting/` (matplotlib variants, Plotly helpers); station panel definitions (`PANELS`) move to `interface/gui/dashboard_view.py`
+- [x] Delete `graphics/compressor_illustration.py` and `graphics/theme.py`
+- [x] `graphics/engine_illustration.py`: keep the layout data (`EngineLayout`, `GasPath`, `gas_path`, constants), drop `draw_engine`/`band`; solids carry a kind ("body"/"casing") instead of a colour
+- [x] `dashboard_view.py`: drop `flow_figure` and unused constants
+- [x] `main_conventional_engine.py`, `main_open_cycle_nuclear_engine.py`: drop the plot calls, keep the printed tables
+- [x] Remove matplotlib, plotly, SciencePlots and their now-unused deps from `requirements.txt` and `.venv`
+- [x] README/CLAUDE.md
+- [x] Verify: API payload identical before/after, site builds and renders, main scripts run
+
+### Review
+- API payload identical before/after (both engines, JSON compare). Site builds; checked in headless Edge (root redirect, Nuclear switch).
+- Main scripts print their tables as before (turbofan F 38.9 kN conventional, 37.9 kN nuclear).
+- `.venv` rebuilt from `requirements.txt`: 19 packages (was ~80 with Streamlit/Dash/NiceGUI leftovers).
+
 # Custom frontends: FastAPI + React site and FastAPI + Svelte site
 
 Decisions (user, 2026-10-16): Dash/NiceGUI look generic; build one site per stack to compare: React + Vite + Tailwind +

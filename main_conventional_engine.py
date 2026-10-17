@@ -1,7 +1,4 @@
 import pandas as pd
-from plotting.plot_with_scienceplots import plot_station_properties as plot_scienceplots
-from plotting.plot_with_rcparams import plot_station_properties as plot_rcparams
-from plotting.plot_with_pgf import plot_station_properties as plot_pgf
 from subsystems.propulsion.motors.helpers.gas_model import GasModel
 from subsystems.propulsion.motors.turbofans.single_spool_open_cycle_liquid_fuel_turbofan import SingleSpoolOpenCycleLiquidFuelTurbofan
 from specifications.SKYF.engine import specs
@@ -68,20 +65,3 @@ if __name__ == "__main__":
     print(perf.to_string(index=False))
     print("\n=== Station Data ===")
     print(stations_df)
-
-    plot_args = dict(
-        stations=result["stations"],
-        x_attr="Tt", y_attr="Pt",
-        x_label=r"$T_t$ [K]",
-        y_label=r"$P_t$ [Pa]",
-    )
-
-    # Option 4: SciencePlots (interactive window)
-    plot_scienceplots(**plot_args, title="SciencePlots")
-
-    # Option 3: rcParams / Computer Modern (interactive window)
-    plot_rcparams(**plot_args, title="rcParams (Computer Modern)")
-
-    # Option 1: pgf backend (saves .pgf file, no interactive window)
-    plot_pgf(**plot_args, title="pgf backend", save_path="station_plot.pgf")
-    print("pgf output saved to: station_plot.pgf")

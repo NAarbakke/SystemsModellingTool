@@ -1,9 +1,9 @@
 """
-The engine models over HTTP for the web dashboard (interface/web/react/), and the built site itself.
+The engine models over HTTP for the web dashboard (interface/gui/react/), and the built site itself.
 
 Run from the repo root:  .venv/Scripts/python -m interface.api.app
     API docs   http://127.0.0.1:8000/docs
-    Dashboard  http://127.0.0.1:8000/   (after `npm run build` in interface/web/react)
+    Dashboard  http://127.0.0.1:8000/   (after `npm run build` in interface/gui/react)
 """
 from pathlib import Path
 from typing import Any
@@ -22,7 +22,7 @@ ENGINES: dict[str, tuple[str, EngineView]] = {
     "conventional": ("Conventional", CONVENTIONAL),
     "nuclear": ("Nuclear", NUCLEAR)}
 
-SITE = Path(__file__).parents[1] / "web" / "react" / "dist"
+SITE = Path(__file__).parent.parent / "gui" / "react" / "dist"
 
 app = FastAPI(title="Systems Modelling Tool API")
 

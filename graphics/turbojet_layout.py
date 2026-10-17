@@ -5,8 +5,7 @@ The inlet length is nominal - the model has no geometry for it yet.
 import numpy as np
 
 from graphics.core_layout import COMBUSTOR_LENGTH, core_layout
-from graphics.engine_illustration import CASING_THICKNESS, FREESTREAM_LENGTH, EngineLayout, gas_path
-from graphics.theme import BODY, CASING
+from graphics.engine_illustration import BODY, CASING, CASING_THICKNESS, FREESTREAM_LENGTH, EngineLayout, gas_path
 from subsystems.propulsion.motors.components.compressors.axial_compressor_sizing import AxialCompressorSizing
 from subsystems.propulsion.motors.turbojets.single_spool_open_cycle_liquid_fuel_turbojet_specs import SingleSpoolOpenCycleLiquidFuelTurbojetSpecifications
 from subsystems.propulsion.motors.turbojets.single_spool_open_cycle_nuclear_turbojet_specs import SingleSpoolOpenCycleNuclearTurbojetSpecifications

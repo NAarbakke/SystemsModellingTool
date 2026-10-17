@@ -18,7 +18,8 @@ subsystems/        Physical subsystems the systems are built from
 specifications/     Per-vehicle spec/parameter sets (e.g. SKYF/)
 verifier/           Simulation/model verification tooling
 materials/           Shared material property data
-plotting/           Plotting utilities
+graphics/           Engine layout geometry (to scale) for the dashboard
+interface/          FastAPI server (api/) and the React dashboard (gui/react/)
 docs/               Architecture, conventions, and theory documentation
 workflow/           Task planning notes (todo.md, lessons.md)
 ```
@@ -52,12 +53,12 @@ Run them from the repository root so the `subsystems`/`specifications`
 namespace packages resolve correctly.
 
 Turbojet dashboards (conventional and nuclear: a to-scale engine drawing with
-flow plots underneath, live inputs) are a web site in `interface/web/react/` (React +
+flow plots underneath, live inputs) are a web site in `interface/gui/react/` (React +
 Vite + Tailwind + shadcn/ui) on top of a FastAPI server in `interface/api/`.
 Build the site once (needs Node.js), then one command serves everything:
 
 ```
-cd interface\web\react && npm install && npm run build
+cd interface\gui\react && npm install && npm run build
 .venv\Scripts\python -m interface.api.app
     http://127.0.0.1:8000/    (dashboard)    http://127.0.0.1:8000/docs    (API)
 ```

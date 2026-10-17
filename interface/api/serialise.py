@@ -11,14 +11,10 @@ import numpy as np
 
 from graphics.core_layout import compressor_rows
 from graphics.engine_illustration import FREESTREAM_LENGTH, LABEL_ROOM, LINER_INSET, N_ROD_LINES, EngineLayout, GasPath
-from graphics.theme import BODY, CASING
-from interface.gui.dashboard_view import EngineView, Snapshot, Tile, performance_tiles, sizing_tiles
-from plotting.station_profiles import PANELS
+from interface.gui.dashboard_view import PANELS, EngineView, Snapshot, Tile, performance_tiles, sizing_tiles
 from subsystems.propulsion.motors.components.compressors.axial_compressor_geometry import AxialCompressorGeometry
 from subsystems.propulsion.motors.components.compressors.axial_compressor_sizing import AxialCompressorSizing
 from subsystems.propulsion.motors.helpers.flow_state import FlowState
-
-SOLID_KINDS = {BODY: "body", CASING: "casing"}
 
 
 def _num(v) -> float | None:
@@ -78,7 +74,7 @@ def _layout(layout: EngineLayout, stations: dict[str, FlowState]) -> dict:
         "gas_paths": [
             _band(p.x, p.r_inner, p.r_outer) | {"stops": [{"x": _num(layout.station_x[k]), "Tt": _num(stations[k].Tt)} for k in p.stations]}
             for p in layout.gas_paths],
-        "solids": [_band(x, lo, hi) | {"kind": SOLID_KINDS.get(fill, "body")} for x, lo, hi, fill in layout.solids],
+        "solids": [_band(x, lo, hi) | {"kind": kind} for x, lo, hi, kind in layout.solids],
         "rotors": [_row(*r) for r in layout.rotors],
         "stators": [_row(*r) for r in layout.stators],
         "labels": [{"text": t, "x": _num(x), "r": _num(r)} for t, x, r in layout.labels],

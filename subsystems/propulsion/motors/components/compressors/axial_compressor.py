@@ -8,11 +8,6 @@ from subsystems.propulsion.motors.components.compressors.axial_compressor_sizing
 from subsystems.propulsion.motors.components.compressors.annulus_type import AnnulusType
 
 
-
-
-#make ui interface to test values
-# node js + plotly, toggleable plots
-
 class AxialCompressor(Component):
     """
     Generic axial compressor

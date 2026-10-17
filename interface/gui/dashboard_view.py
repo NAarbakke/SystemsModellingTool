@@ -1,22 +1,26 @@
 """
-What every engine dashboard shares, whatever draws the page (the web frontends via interface/api/): how an engine
-describes itself (EngineView), its inputs, the tiles as data, and the Plotly flow figure (engine on top, plots underneath).
+What every engine dashboard shares, whatever draws the page (the web dashboard via interface/api/): how an engine
+describes itself (EngineView), its inputs, the station plot panels and the tiles, all as data.
 """
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
 import numpy as np
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 
-from graphics.engine_illustration import FREESTREAM_LENGTH, LABEL_ROOM, EngineLayout, draw_engine
-from graphics.theme import style
-from plotting.station_profiles import PANELS, add_station_profiles
+from graphics.engine_illustration import EngineLayout
 from subsystems.propulsion.motors.components.compressors.axial_compressor_geometry import AxialCompressorGeometry
 from subsystems.propulsion.motors.components.compressors.axial_compressor_sizing import AxialCompressorSizing
 
-ALL_PANELS = list(PANELS)
-DEFAULT_PANELS = ["Temperature", "Pressure", "Velocity", "Mass flow"]
+# Station plots: FlowState quantities against station, one panel per quantity. Total and static values of the
+# same quantity share a panel.
+# panel -> (display unit, SI -> display scale, [(FlowState field, symbol, "Total" / "Static" / None)])
+PANELS = {
+    "Temperature": ("K", 1.0, [("Tt", "Tt", "Total"), ("T", "T", "Static")]),
+    "Pressure": ("kPa", 1e-3, [("Pt", "Pt", "Total"), ("P", "P", "Static")]),
+    "Density": ("kg/m³", 1.0, [("rho_t", "ρt", "Total"), ("rho", "ρ", "Static")]),
+    "Velocity": ("m/s", 1.0, [("V", "V", None)]),
+    "Mach number": ("-", 1.0, [("M", "M", None)]),
+    "Mass flow": ("kg/s", 1.0, [("m_dot", "ṁ", None)])}
 
 # run_point() scalar -> (label, display unit, SI -> display scale); unknown keys are shown raw
 KPIS = {
@@ -30,17 +34,6 @@ KPIS = {
     "power_density": ("Core power density", "GW/m³", 1e-9),
     "heat_flux": ("Rod heat flux", "MW/m²", 1e-6),
     "within_limits": ("Reactor limits", "", 1.0)}
-
-PLOT_WIDTH = 1300      # [px] typical width of the plot area - sets the engine row height so the drawing fills it
-PANEL_HEIGHT = 190      # [px]
-NAME_ROOM = 0.25        # [m] station names go on the axis only if neighbouring stations are at least this far apart
-
-FLOW_NOTE = (
-    "The engine is drawn to scale where the model has geometry (compressor annulus and blade rows, reactor length, "
-    "fan radii, nozzle exit areas); the other lengths are nominal. Bright rows are rotors, dim rows are stators. "
-    "Colour is total temperature, interpolated linearly between stations. Gaps in a curve are stations where the "
-    "model does not compute that quantity.")
-
 
 #---- How an engine describes itself to a dashboard ----#
 @dataclass(frozen=True)
@@ -120,33 +113,3 @@ def sizing_tiles(sizing: AxialCompressorSizing) -> list[Tile]:
         Tile("Exit hub radius", f"{sizing.r_hub_stage[-1]:,.3g}", "m"),
         Tile("Exit tip radius", f"{sizing.r_tip_stage[-1]:,.3g}", "m")]
 #---------------------------------------------------------------------#
-
-
-def flow_figure(layout: EngineLayout, stations: dict, streams: dict[str, list[str]], panels: list[str],
-                station_names: dict[str, str] | None = None) -> go.Figure:
-    """Engine cross-section on top, one plot per panel underneath, all on the same axial axis."""
-    x_range = [-FREESTREAM_LENGTH - 0.12, layout.x_end + FREESTREAM_LENGTH + 0.05]
-    engine_height = round(PLOT_WIDTH * 2 * (layout.r_max + LABEL_ROOM) / (x_range[1] - x_range[0]))
-    height = engine_height + PANEL_HEIGHT * len(panels) + 150
-    fig = make_subplots(
-        rows=1 + len(panels), cols=1, shared_xaxes=True, vertical_spacing=24 / height,
-        row_heights=[engine_height] + [PANEL_HEIGHT] * len(panels))
-
-    # Under the plots, ticks (and so the vertical gridlines) sit on the stations
-    positions = sorted(set(layout.station_x.values()))
-    named = station_names is not None and min(np.diff(positions)) >= NAME_ROOM
-    ticktext = []
-    for x in positions:
-        keys = [k for k, x_k in layout.station_x.items() if x_k == x]
-        ticktext.append(f"<b>{' / '.join(keys)}</b>" + (f"<br>{station_names[keys[0]]}" if named else ""))
-    fig.update_xaxes(tickvals=positions, ticktext=ticktext, range=x_range)
-
-    draw_engine(fig, layout, stations)
-    add_station_profiles(fig, stations, layout.station_x, streams, panels, first_row=2)
-
-    style(fig, height)
-    fig.update_layout(
-        hovermode="x unified", hoversubplots="axis", margin=dict(t=100, b=60, r=90),
-        legend=dict(x=1, xanchor="right", y=1 + 55 / (height - 160)))
-    return fig
-

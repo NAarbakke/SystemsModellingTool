@@ -8,8 +8,7 @@ bypass nozzle exit area. Nominal: every length outside the core, and the thickne
 import numpy as np
 
 from graphics.core_layout import core_layout
-from graphics.engine_illustration import CASING_THICKNESS, FREESTREAM_LENGTH, EngineLayout, GasPath, gas_path
-from graphics.theme import BODY, CASING
+from graphics.engine_illustration import BODY, CASING, CASING_THICKNESS, FREESTREAM_LENGTH, EngineLayout, GasPath, gas_path
 from subsystems.propulsion.motors.components.compressors.axial_compressor_sizing import AxialCompressorSizing
 from subsystems.propulsion.motors.turbofans.single_spool_open_cycle_nuclear_fuel_turbofan_specs import SingleSpoolOpenCycleNuclearTurbofanSpecifications
 
