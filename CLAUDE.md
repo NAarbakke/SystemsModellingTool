@@ -81,8 +81,10 @@ Conventions: @docs/codebase/conventions.md
 - New package → install into `.venv` and add it to `documentation/requirements.txt`
 
 # Dashboards
-- Engine dashboards live in `interface/gui/`, named after the engine: `<engine>_dashboard_static.py` (writes HTML) and `<engine>_dashboard.py` (Streamlit, live inputs).
-- Drawing code is in `graphics/` (engine and compressor illustrations, `theme.py`), plots in `plotting/`, page assembly in `interface/gui/dashboard_view.py`.
+- Dynamic only (no static HTML). FastAPI (`interface/api/`) runs the models; the frontend `interface/web/react/` (React + Vite + Tailwind + shadcn/ui) consumes it.
+- The API sends ready-to-draw geometry (bands, upper half only) from `interface/api/serialise.py`; geometry decisions stay in Python, the frontend only paints.
+- An engine joins the dashboards through `interface/gui/<engine>_view.py`: an `EngineView` (title, stations, streams, inputs, `evaluate()`), framework-neutral. Inputs per component are in `interface/gui/component_inputs.py`.
+- Drawing code is in `graphics/` (engine and compressor illustrations, `theme.py`), plots in `plotting/`, shared engine-view types and tiles in `interface/gui/dashboard_view.py`.
 
 
 ## Project Specific Guidelines

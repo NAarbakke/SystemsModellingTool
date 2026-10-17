@@ -14,6 +14,7 @@ from subsystems.propulsion.motors.turbofans.single_spool_open_cycle_liquid_fuel_
 from subsystems.propulsion.motors.turbofans.single_spool_closed_cycle_nuclear_fuel_turbofan_specs import SingleSpoolClosedCycleNuclearTurbofanSpecifications
 from subsystems.propulsion.motors.turbofans.single_spool_open_cycle_nuclear_fuel_turbofan_specs import SingleSpoolOpenCycleNuclearTurbofanSpecifications
 from subsystems.propulsion.motors.turbojets.single_spool_open_cycle_nuclear_turbojet_specs import SingleSpoolOpenCycleNuclearTurbojetSpecifications
+from subsystems.propulsion.motors.turbojets.single_spool_open_cycle_liquid_fuel_turbojet_specs import SingleSpoolOpenCycleLiquidFuelTurbojetSpecifications
 
 
 #---- Components ----#
@@ -135,6 +136,14 @@ specs_open_cycle_nuclear_turbojet = SingleSpoolOpenCycleNuclearTurbojetSpecifica
     compressor=axial_compressor,
     compressor_geometry=axial_compressor_geometry,
     reactor=reactor,
+    turbine=turbine,
+    nozzle=core_nozzle)
+
+specs_open_cycle_liquid_fuel_turbojet = SingleSpoolOpenCycleLiquidFuelTurbojetSpecifications(
+    subsonic_inlet=subsonic_inlet,
+    compressor=axial_compressor,
+    compressor_geometry=axial_compressor_geometry,
+    combustor=combustor,
     turbine=turbine,
     nozzle=core_nozzle)
 #-----------------#

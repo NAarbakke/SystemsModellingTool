@@ -51,13 +51,19 @@ python evaluate_coolants.py
 Run them from the repository root so the `subsystems`/`specifications`
 namespace packages resolve correctly.
 
-Engine dashboards (a to-scale engine drawing with flow plots underneath) live
-in `interface/gui/`, named after their engine:
+Turbojet dashboards (conventional and nuclear: a to-scale engine drawing with
+flow plots underneath, live inputs) are a web site in `interface/web/react/` (React +
+Vite + Tailwind + shadcn/ui) on top of a FastAPI server in `interface/api/`.
+Build the site once (needs Node.js), then one command serves everything:
 
 ```
-.venv\Scripts\python -m interface.gui.<engine>_dashboard_static                 (writes an HTML file)
-.venv\Scripts\python -m streamlit run interface/gui/<engine>_dashboard.py       (live page with inputs)
+cd interface\web\react && npm install && npm run build
+.venv\Scripts\python -m interface.api.app
+    http://127.0.0.1:8000/    (dashboard)    http://127.0.0.1:8000/docs    (API)
 ```
+
+While editing the site, keep the API running and use `npm run dev` in its folder
+(http://localhost:5173/react/) for instant reload.
 
 ## Status
 

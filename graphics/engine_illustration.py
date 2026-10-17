@@ -1,6 +1,6 @@
 """
 Side-view cross-section of an engine, drawn to scale with axes in metres: gas paths coloured by total
-temperature, solid parts, blade rows, fuel rods and station markers.
+temperature, solid parts, blade rows, fuel rods or combustor liner, and station markers.
 
 An engine describes itself as an EngineLayout (turbojet_layout.py, turbofan_layout.py); draw_engine() draws it.
 """
@@ -20,6 +20,8 @@ LABEL_ROOM = 0.14           # [m] space above and below the engine for station n
 ROTOR = "rgba(255, 255, 255, 0.70)"
 STATOR = "rgba(255, 255, 255, 0.30)"
 ROD = "rgba(255, 255, 255, 0.35)"
+LINER = "rgba(255, 255, 255, 0.45)"
+LINER_INSET = 0.25          # [-] liner sits this fraction of the annulus height in from each wall
 
 
 @dataclass
@@ -42,8 +44,9 @@ class EngineLayout:
     solids: list[tuple[np.ndarray, np.ndarray, np.ndarray, str]]    # (x, r_low, r_high, fill colour)
     rotors: list[tuple[float, float, GasPath]]              # blade rows as (start, end, the path they span)
     stators: list[tuple[float, float, GasPath]]
-    rods: tuple[float, float, GasPath]                      # fuel rod bundle
     labels: list[tuple[str, float, float | None]]           # (text, x, radius) - radius None puts it below the engine
+    rods: tuple[float, float, GasPath] | None = None        # fuel rod bundle (reactor)
+    liner: tuple[float, float, GasPath] | None = None       # flame tube (combustor)
 
     @property
     def x_end(self) -> float:
@@ -90,10 +93,18 @@ def draw_engine(fig: go.Figure, layout: EngineLayout, stations: dict) -> go.Figu
             add(band(path.x[i:i + 2], path.r_inner[i:i + 2], path.r_outer[i:i + 2]), sample_colorscale(HEAT, [t])[0])
 
     # Fuel rods
-    x_0, x_1, path = layout.rods
-    r_rods = np.linspace(*path.radii(x_0), N_ROD_LINES + 2)[1:-1]
-    for r in [*r_rods, *-r_rods]:
-        shapes.append(dict(type="line", x0=x_0, x1=x_1, y0=r, y1=r, xref="x", yref="y", line=dict(color=ROD, width=1.5)))
+    if layout.rods:
+        x_0, x_1, path = layout.rods
+        r_rods = np.linspace(*path.radii(x_0), N_ROD_LINES + 2)[1:-1]
+        for r in [*r_rods, *-r_rods]:
+            shapes.append(dict(type="line", x0=x_0, x1=x_1, y0=r, y1=r, xref="x", yref="y", line=dict(color=ROD, width=1.5)))
+
+    # Combustor liner: a closed flame tube inset from both walls
+    if layout.liner:
+        x_0, x_1, path = layout.liner
+        r_in, r_out = path.radii([x_0, x_1])
+        h = r_out - r_in
+        add(band([x_0, x_1], r_in + LINER_INSET * h, r_out - LINER_INSET * h), "rgba(0, 0, 0, 0)", line=LINER)
 
     # Blade rows span the local annulus
     for rows, fill in ((layout.stators, STATOR), (layout.rotors, ROTOR)):

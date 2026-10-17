@@ -28,7 +28,7 @@ def turbofan_layout(specs: SingleSpoolOpenCycleNuclearTurbofanSpecifications, si
     x_1 = INLET_LENGTH
     x_2 = x_1 + FAN_LENGTH
     x_25 = x_2 + SPLITTER_LENGTH
-    core = core_layout(specs.compressor_geometry, sizing, specs.reactor, specs.core_nozzle, x_face=x_25)
+    core = core_layout(specs.compressor_geometry, sizing, specs.reactor.fuel_rod_length, specs.core_nozzle, x_face=x_25)
     x_7 = core.x_3 + BYPASS_DUCT_AFT
     x_8 = x_7 + BYPASS_NOZZLE_LENGTH
 
@@ -67,7 +67,7 @@ def turbofan_layout(specs: SingleSpoolOpenCycleNuclearTurbofanSpecifications, si
             (x_nacelle, r_nacelle, r_nacelle + NACELLE_THICKNESS, CASING)],
         rotors=[(x_1 + 0.02, x_2 - 0.04, front), *[(x_0, x_1, core_path) for x_0, x_1 in core.rotors]],
         stators=[(x_0, x_1, core_path) for x_0, x_1 in core.stators],
-        rods=(*core.rods, core_path),
+        rods=(*core.heat, core_path),
         labels=[
             ("Inlet", 0.5 * x_1, None),
             ("Fan", 0.5 * (x_1 + x_2), None),

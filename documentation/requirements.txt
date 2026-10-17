@@ -14,4 +14,5 @@ python-dateutil==2.9.0.post0
 SciencePlots==2.2.1
 six==1.17.0
 tzdata==2025.3
-streamlit==1.65.0
+fastapi==0.143.3
+uvicorn==0.54.0

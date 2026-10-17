@@ -49,3 +49,6 @@ desktop.ini
 .env.local
 *.pem
 *.key
+
+# Node
+node_modules/

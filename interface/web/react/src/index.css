@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens. Monochrome on black with hairline borders; the only colour is heat, taken from the engine's
+ * total-temperature scale.
+ */
+:root {
+  --bg: #000000;
+  --surface: #0a0a0a;
+  --surface-2: #111111;
+  --line: #1c1c1c;
+  --line-strong: #2e2e2e;
+  --fg: #ededed;
+  --fg-2: #a1a1a1;
+  --fg-3: #666666;
+  --heat: #ff8a3d;
+  --heat-soft: rgb(255 138 61 / 0.12);
+  --good: #3ecf8e;
+  --bad: #ff5f56;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-fg-3: var(--fg-3);
+  --color-heat: var(--heat);
+  --color-heat-soft: var(--heat-soft);
+  --color-good: var(--good);
+  --color-bad: var(--bad);
+  --font-sans: "Geist Variable", system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, monospace;
+}
+
+@layer base {
+  html { color-scheme: dark; }
+  body {
+    @apply bg-bg text-fg font-sans antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+  ::selection { background: var(--heat-soft); color: var(--fg); }
+}
+
+/* Small uppercase mono label used for section and group headings */
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+@utility tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}

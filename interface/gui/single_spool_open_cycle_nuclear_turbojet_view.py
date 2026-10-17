@@ -1,12 +1,21 @@
 """
-The turbojet as both of its dashboards see it (dynamic: single_spool_open_cycle_nuclear_turbojet_dashboard.py, static: single_spool_open_cycle_nuclear_turbojet_dashboard_static.py).
+The nuclear turbojet as a dashboard sees it: its stations, its inputs and one operating point per set of input values.
 """
-from subsystems.propulsion.motors.components.compressors.axial_compressor_sizing import AxialCompressorSizing
+from dataclasses import replace
+
+import numpy as np
+
+from graphics.turbojet_layout import turbojet_layout
+from interface.gui.component_inputs import (
+    apply_axial_compressor, apply_convergent_nozzle, apply_reactor, axial_compressor_inputs, convergent_nozzle_inputs,
+    reactor_inputs)
+from interface.gui.dashboard_view import FLIGHT_INPUTS, EngineView, Snapshot, flight_subtitle
+from specifications.SKYF.engine import specs_open_cycle_nuclear_turbojet as base
 from subsystems.propulsion.motors.helpers.gas_model import GasModel
 from subsystems.propulsion.motors.turbojets.single_spool_open_cycle_nuclear_turbojet import SingleSpoolOpenCycleNuclearTurbojet
-from subsystems.propulsion.motors.turbojets.single_spool_open_cycle_nuclear_turbojet_specs import SingleSpoolOpenCycleNuclearTurbojetSpecifications
 
-TITLE = "Single-spool open-cycle nuclear turbojet"
+NO_EXPANSION = ("No valid operating point: the nozzle total pressure is below ambient, so the flow cannot expand. "
+                "Lower the pressure ratio or raise the turbine entry temperature.")
 
 # Station numbering follows run_point()
 STATIONS = {
@@ -17,12 +26,29 @@ STATIONS = {
     "5": "Turbine exit",
     "6": "Nozzle exit"}
 
-STREAMS = {"Core": list(STATIONS)}
 
+def evaluate(values: dict) -> Snapshot:
+    compressor, geometry = apply_axial_compressor(base.compressor, base.compressor_geometry, values)
+    specs = replace(
+        base, compressor=compressor, compressor_geometry=geometry,
+        reactor=apply_reactor(base.reactor, values), nozzle=apply_convergent_nozzle(base.nozzle, values))
 
-def run_turbojet(specs: SingleSpoolOpenCycleNuclearTurbojetSpecifications, T_0: float, P_0: float, M_0: float) -> tuple[dict, AxialCompressorSizing]:
-    """One operating point: the run_point() result and the compressor sized for it."""
+    P_0 = values["P_0"] * 1e3
     engine = SingleSpoolOpenCycleNuclearTurbojet(GasModel(), specs, P_0)
-    result = engine.run_point(T_0=T_0, P_0=P_0, M_0=M_0)
+    result = engine.run_point(T_0=values["T_0"], P_0=P_0, M_0=values["M_0"])
     sizing = engine.compressor.compute_geometry(result["stations"]["1"], result["stations"]["3"])
-    return result, sizing
+    return Snapshot(
+        result, turbojet_layout(specs, sizing), geometry, sizing, flight_subtitle(values),
+        error=None if np.isfinite(result["F_total"]) else NO_EXPANSION)
+
+
+VIEW = EngineView(
+    title="Single-spool open-cycle nuclear turbojet",
+    stations=STATIONS,
+    streams={"Core": list(STATIONS)},
+    inputs={
+        "Flight condition": FLIGHT_INPUTS,
+        "Compressor": axial_compressor_inputs(base.compressor, base.compressor_geometry),
+        "Reactor": reactor_inputs(base.reactor),
+        "Nozzle": convergent_nozzle_inputs(base.nozzle)},
+    evaluate=evaluate)

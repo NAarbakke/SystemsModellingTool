@@ -1,9 +1,10 @@
 """
-Layout of the part every nuclear engine here shares: axial compressor -> reactor -> turbine -> convergent nozzle.
+Layout of the core every engine here shares: axial compressor -> heat section -> turbine -> convergent nozzle.
+The heat section is a reactor or a combustor; the caller gives its length.
 
 To scale where the model has geometry: compressor annulus and blade rows (AxialCompressorGeometry +
 AxialCompressorSizing), reactor length (fuel rod length), nozzle exit radius (A_exit).
-Nominal where it has none yet: turbine and nozzle lengths, shaft radius, casing radius aft of the compressor.
+Nominal where it has none yet: combustor, turbine and nozzle lengths, shaft radius, casing radius aft of the compressor.
 """
 from dataclasses import dataclass
 
@@ -12,12 +13,12 @@ import numpy as np
 from subsystems.propulsion.motors.components.compressors.axial_compressor_geometry import AxialCompressorGeometry
 from subsystems.propulsion.motors.components.compressors.axial_compressor_sizing import AxialCompressorSizing
 from subsystems.propulsion.motors.components.nozzles.convergent_nozzle_specs import ConvergentNozzleSpecs
-from subsystems.propulsion.motors.components.reactors.fast_neutron_reactor_specs import FastNeutronReactorSpecs
 
 # Nominal dimensions - not modelled yet
+COMBUSTOR_LENGTH = 0.40     # [m]
 TURBINE_LENGTH = 0.30       # [m]
 NOZZLE_LENGTH = 0.40        # [m]
-TRANSITION_LENGTH = 0.08    # [m] hub fairing into / out of the reactor
+TRANSITION_LENGTH = 0.08    # [m] hub fairing into / out of the heat section
 SHAFT_TO_CASING = 0.12      # [-] shaft radius / casing radius
 
 
@@ -25,7 +26,7 @@ SHAFT_TO_CASING = 0.12      # [-] shaft radius / casing radius
 class CoreLayout:
     """Axial positions [m] of the core stations, wall breakpoints from compressor face to nozzle exit, and what sits inside."""
     x_3: float      # compressor exit
-    x_4: float      # reactor exit
+    x_4: float      # heat section (reactor / combustor) exit
     x_5: float      # turbine exit
     x_6: float      # nozzle exit
     x_inner: list[float]
@@ -34,7 +35,7 @@ class CoreLayout:
     r_outer: list[float]
     rotors: list[tuple[float, float]]
     stators: list[tuple[float, float]]
-    rods: tuple[float, float]
+    heat: tuple[float, float]   # heat section between the hub fairings (fuel rods / combustor liner)
 
 
 def compressor_rows(geometry: AxialCompressorGeometry, sizing: AxialCompressorSizing, x_face: float):
@@ -54,15 +55,15 @@ def compressor_rows(geometry: AxialCompressorGeometry, sizing: AxialCompressorSi
     return x_stage, rotors, stators
 
 
-def core_layout(geometry: AxialCompressorGeometry, sizing: AxialCompressorSizing, reactor: FastNeutronReactorSpecs,
+def core_layout(geometry: AxialCompressorGeometry, sizing: AxialCompressorSizing, L_heat: float,
                 nozzle: ConvergentNozzleSpecs, x_face: float) -> CoreLayout:
-    """Core layout with the compressor face at x_face."""
+    """Core layout with the compressor face at x_face and a heat section L_heat [m] long."""
     r_case = geometry.r_tip
     r_shaft = SHAFT_TO_CASING * r_case
     r_exit = float(np.sqrt(nozzle.A_exit / np.pi))
 
     x_3 = x_face + sizing.L
-    x_4 = x_3 + reactor.fuel_rod_length
+    x_4 = x_3 + L_heat
     x_5 = x_4 + TURBINE_LENGTH
     x_6 = x_5 + NOZZLE_LENGTH
 
@@ -83,4 +84,4 @@ def core_layout(geometry: AxialCompressorGeometry, sizing: AxialCompressorSizing
         r_outer=[r_tip[0], *r_tip, r_tip[-1], r_case, r_case, r_exit],
         rotors=rotors,
         stators=stators,
-        rods=(x_3 + TRANSITION_LENGTH, x_4 - TRANSITION_LENGTH))
+        heat=(x_3 + TRANSITION_LENGTH, x_4 - TRANSITION_LENGTH))
