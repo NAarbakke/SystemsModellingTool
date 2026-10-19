@@ -1,3 +1,39 @@
+# PDF engineering reports (academic style) - `reports/`
+
+User (2026-10-19): generate PDF reports with nice plots and figures in an academic style, like an engineering report.
+Decisions (user, 2026-10-19): pgfplots (no matplotlib), liquid-fuel turbojet with a sweep first, CLI first, then TUI and GUI.
+
+## Stack
+- LaTeX (TeX Live 2026: xelatex, latexmk), Latin Modern; pgfplots/TikZ paint every figure from data Python writes
+- Jinja2 for the document shell; siunitx, booktabs, caption, float, fancyhdr, hyperref
+
+## Plan
+- [x] `reports/report.py`: `Case` (engine, values, evaluated point + dashboard payload), `Section` base, `Report.build()` via latexmk
+- [x] `reports/elements/`: `Table`/`Group`, `Axis`/`GroupPlot`/`Figure`, marks `Line`/`Polygon`/`Band` (Tt-shaded)/`Text`
+- [x] `reports/figures/`: engine half-section, station plots, compressor meridional section, sweep plots
+- [x] `reports/sections/`: nomenclature, engine model, design point, flow state, compressor, off-design
+- [x] `reports/sweep.py`: input over its dashboard range, others held; failed points become gaps
+- [x] `reports/build.py` CLI: `--engine`, `--set KEY=VALUE`, `--sweep KEY...`, `--points`, `--out`
+- [x] `interface/gui/engines.py`: engine registry shared by API and reports
+- [x] `reports/output/` gitignored; jinja2 in `documentation/requirements.txt`; CLAUDE.md + README
+- [x] `reports.build.build_report()`: one entry point for CLI, TUI and API (input checks shared)
+- [x] TUI `interface/tui/reports_app.py` (Textual): engine, inputs (changed ones in heat orange), live performance, sweeps, build in a worker thread, open PDF
+- [x] GUI: `POST /api/engines/{id}/report` -> PDF (temp folder per request) + "Export report" button in the React header
+
+## Review
+- `python -m reports.build` -> 5-page A4 PDF in ~15-30 s (pgfplots patches dominate). Log: no overfull boxes or missing
+  glyphs; one harmless pgfplots notice (Mach panel has a single point, the model leaves most station M empty).
+- Numbers match the API payload (28.4 kN, 55.54 g/(kN s) at defaults). Checked: `--set` overrides flagged with * in the
+  inputs table, two sweeps (M_0, T_tet), 8-stage compressor labels, nuclear engine, `--sweep` with none.
+- Bad key / bad option / non-numeric sweep -> one-line error, exit 1. API still serves both engines after the registry move.
+- Pages rendered and inspected (PyMuPDF in a scratch venv, not the project).
+- TUI driven headless (Textual pilot): live thrust on edit (M_0 0.6 -> 20.95 kN), engine switch keeps values, build -> PDF;
+  screenshots checked in headless Edge. API: 200 + valid PDF (42 s, two sweeps); unknown input/engine/bad sweep -> 422/404.
+  Dashboard at 1600x900 shows the button; site builds.
+- Model gaps show in the report as dashes: static T/P, M and V are only set at a few stations by the components.
+
+---
+
 # Remove all plotting (Plotly, matplotlib); the React dashboard is the only drawing
 
 User (2026-10-17): remove plotting from all scripts, including Plotly.

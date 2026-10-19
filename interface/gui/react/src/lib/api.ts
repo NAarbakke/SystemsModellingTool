@@ -98,3 +98,17 @@ export async function evaluate(engine: string, values: Record<string, Value>, si
 
 export const defaults = (engine: EngineDef): Record<string, Value> =>
   Object.fromEntries(engine.inputs.flatMap((g) => g.items.map((i) => [i.key, i.default])))
+
+/* PDF engineering report (reports/) for these input values; resolves once the file is downloaded (~15-30 s) */
+export async function downloadReport(engine: string, values: Record<string, Value>, sweeps: string[] = ["M_0"]): Promise<void> {
+  const res = await fetch(`/api/engines/${engine}/report`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ values, sweeps }),
+  })
+  if (!res.ok) throw new Error((await res.json()).detail ?? `report: ${res.status}`)
+  const url = URL.createObjectURL(await res.blob())
+  const a = Object.assign(document.createElement("a"), { href: url, download: `${engine}_report.pdf` })
+  a.click()
+  setTimeout(() => URL.revokeObjectURL(url), 10_000)
+}

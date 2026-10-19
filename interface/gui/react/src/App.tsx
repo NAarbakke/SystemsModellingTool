@@ -7,7 +7,7 @@ import { StageTable } from "@/components/StageTable"
 import { StationReadout } from "@/components/StationReadout"
 import { Tiles } from "@/components/Tiles"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { defaults, evaluate, fetchEngines, type EngineDef, type Snapshot, type Value } from "@/lib/api"
+import { defaults, downloadReport, evaluate, fetchEngines, type EngineDef, type Snapshot, type Value } from "@/lib/api"
 import { fmt } from "@/lib/format"
 import { HEAT_GRADIENT } from "@/lib/heat"
 
@@ -83,9 +83,12 @@ export default function App() {
             <span className="text-fg-2">Propulsion</span><Slash />
             <span className="text-fg">{engine.label} turbojet</span>
           </nav>
-          <div className="tabular flex items-center gap-2 text-[12px] text-fg-3">
-            <span className={`size-1.5 rounded-full ${apiError ? "bg-bad" : "bg-good shadow-[0_0_8px_var(--good)]"}`} />
-            {apiError ? "API unreachable" : `Live · ${latency == null ? "–" : Math.round(latency)} ms`}
+          <div className="flex items-center gap-5">
+            <ExportReport engine={engineId} values={current} disabled={!!snap?.error || !!apiError} onError={setApiError} />
+            <div className="tabular flex items-center gap-2 text-[12px] text-fg-3">
+              <span className={`size-1.5 rounded-full ${apiError ? "bg-bad" : "bg-good shadow-[0_0_8px_var(--good)]"}`} />
+              {apiError ? "API unreachable" : `Live · ${latency == null ? "–" : Math.round(latency)} ms`}
+            </div>
           </div>
         </header>
 
@@ -158,6 +161,32 @@ function Legend({ TtRange }: { TtRange: [number, number] }) {
         {fmt(TtRange[1], 4)} K
       </span>
     </div>
+  )
+}
+
+/* Typesets the PDF report (reports/) for the current inputs and downloads it; takes ~15-30 s */
+function ExportReport({ engine, values, disabled, onError }: {
+  engine: string; values: Record<string, Value>; disabled: boolean; onError: (e: string) => void
+}) {
+  const [busy, setBusy] = useState(false)
+  const run = () => {
+    setBusy(true)
+    downloadReport(engine, values)
+      .catch((e) => onError(`Report failed: ${e.message ?? e}`))
+      .finally(() => setBusy(false))
+  }
+  return (
+    <button
+      onClick={run}
+      disabled={disabled || busy}
+      title="PDF engineering report: design point, flow state, compressor, Mach sweep"
+      className="tabular flex h-7 cursor-pointer items-center gap-2 rounded-md border border-line px-2.5 text-[12px] text-fg-2 transition-colors hover:border-line-strong hover:text-fg disabled:cursor-default disabled:opacity-50"
+    >
+      {busy
+        ? <span className="size-3 animate-spin rounded-full border-[1.5px] border-heat border-t-transparent" />
+        : <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.3"><path d="M6 1.5v6M3.5 5 6 7.5 8.5 5M2 10.5h8" /></svg>}
+      {busy ? "Typesetting report…" : "Export report"}
+    </button>
   )
 }
 

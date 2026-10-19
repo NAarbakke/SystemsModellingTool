@@ -1,0 +1,41 @@
+/* Same palette as the web dashboard: near-black surfaces, hairlines, one heat accent */
+$heat: #ff8a3d;
+$line: #262626;
+$fg-2: #a1a1a1;
+$fg-3: #6b6b6b;
+
+Screen { background: #0a0a0a; }
+Header { background: #111111; color: $fg-2; }
+Footer { background: #111111; }
+
+.eyebrow { color: $fg-3; text-style: bold; margin: 1 0 0 0; }
+
+#side { width: 52; background: #111111; border-right: solid $line; padding: 0 1; }
+#engine { margin: 1 0; }
+#inputs { height: 1fr; scrollbar-size-vertical: 1; }
+#changed { height: 2; color: $fg-3; border-top: solid $line; }
+.group { color: $fg-3; text-style: bold; margin: 1 0 0 0; }
+
+.row { height: 1; margin: 0 0 1 0; }
+.row .name { width: 1fr; color: $fg-2; }
+.row Input, .row Select { width: 16; }
+.row.changed .name { color: $heat; }
+.row.changed Input { color: $heat; }
+
+#main { padding: 0 2; }
+#title { margin: 1 0 0 0; }
+#kpis { height: auto; max-height: 9; background: #111111; border: round $line; }
+#sweeps { height: 9; background: #111111; border: round $line; }
+#sweeps:focus { border: round $heat; }
+
+#options { height: 1; margin: 1 0 0 0; }
+#options .name { width: 20; color: $fg-2; }
+#options Input { width: 8; }
+
+#actions { height: 3; margin: 1 0 0 0; }
+#actions Button { margin: 0 1 0 0; }
+#build { background: $heat; color: #0a0a0a; text-style: bold; border: none; }
+#build:disabled { background: #3a2a1f; color: $fg-3; }
+#open { border: none; background: #1a1a1a; }
+
+#log { height: 1fr; margin: 1 0; background: #111111; border: round $line; }

@@ -84,7 +84,12 @@ Conventions: @docs/codebase/conventions.md
 - Dynamic only (no static HTML). FastAPI (`interface/api/`) runs the models; the frontend `interface/gui/react/` (React + Vite + Tailwind + shadcn/ui) consumes it.
 - The API sends ready-to-draw geometry (bands, upper half only) from `interface/api/serialise.py`; geometry decisions stay in Python, the frontend only paints.
 - An engine joins the dashboards through `interface/gui/<engine>_view.py`: an `EngineView` (title, stations, streams, inputs, `evaluate()`), framework-neutral. Inputs per component are in `interface/gui/component_inputs.py`.
-- Engine layout geometry (no drawing) is in `graphics/`; shared engine-view types, plot panels and tiles in `interface/gui/dashboard_view.py`. No plotting libraries: the dashboard is the only place things are drawn.
+- Engine layout geometry (no drawing) is in `graphics/`; shared engine-view types, plot panels and tiles in `interface/gui/dashboard_view.py`. No plotting libraries: the dashboard and the PDF reports are the only places things are drawn.
+
+# Reports
+- `reports/`: PDF engineering reports, LaTeX (xelatex via latexmk, TeX Live) + pgfplots, Jinja2 shell template. Run `.venv/Scripts/python -m reports.build`.
+- Built like the models: `Report` (system) <- `Section`s (subsystems, `reports/sections/`) <- elements (`Table`, `Figure`/`Axis`/marks in `reports/elements/`). Figures in `reports/figures/` paint the dashboard's ready-to-draw data (`serialise.py`); no geometry decided there.
+- Three front ends, one function (`reports.build.build_report`): CLI `python -m reports.build`, TUI `python -m interface.tui.reports_app` (Textual), and `POST /api/engines/{id}/report` behind the dashboard's "Export report" button.
 
 
 ## Project Specific Guidelines

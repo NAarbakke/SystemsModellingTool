@@ -1,0 +1,63 @@
+\documentclass[11pt,a4paper]{article}
+
+% ---- Page and type ----
+\usepackage[margin=25mm, headheight=14pt]{geometry}
+\usepackage{fontspec}
+\usepackage{amsmath}
+\usepackage{unicode-math}
+\setmainfont{Latin Modern Roman}
+\setmathfont{Latin Modern Math}
+\usepackage{microtype}
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage[detect-all]{siunitx}
+\sisetup{group-digits=integer, group-minimum-digits=4, exponent-product=\cdot}
+\usepackage[font=small, labelfont=bf, labelsep=period]{caption}
+\usepackage{float}          % [H]: tables and figures stay where the section puts them
+\raggedbottom
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage[hidelinks]{hyperref}
+
+% ---- Plots ----
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{
+  compat=1.18,
+  every axis/.append style={
+    tick label style={font=\footnotesize}, label style={font=\small}, legend style={font=\footnotesize, draw=none,
+    fill=white, fill opacity=0.85, text opacity=1}, tick align=outside, tick pos=left, axis line style={black!70},
+    major grid style={black!12}, minor grid style={black!6}},
+  every axis plot/.append style={every mark/.append style={solid}},
+  /pgf/number format/1000 sep={\,},
+  colormap name=viridis}
+\definecolor{total}{HTML}{1F4E79}
+\definecolor{static}{HTML}{C0504D}
+\definecolor{body}{HTML}{8C8C8C}
+\definecolor{casing}{HTML}{BDBDBD}
+
+% ---- Header and footer ----
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\itshape \VAR{title}}
+\fancyhead[R]{\small \VAR{date}}
+\fancyfoot[C]{\small Page \thepage\ of \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\title{\textbf{\VAR{title}}\\[0.4em]\large \VAR{subtitle}}
+\author{\VAR{author}}
+\date{\VAR{date}}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\begin{abstract}
+\VAR{abstract}
+\end{abstract}
+
+\BLOCK{for section in sections}
+\VAR{section}
+
+\BLOCK{endfor}
+\end{document}

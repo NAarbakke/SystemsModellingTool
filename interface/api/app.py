@@ -5,22 +5,20 @@ Run from the repo root:  .venv/Scripts/python -m interface.api.app
     API docs   http://127.0.0.1:8000/docs
     Dashboard  http://127.0.0.1:8000/   (after `npm run build` in interface/gui/react)
 """
+import tempfile
 from pathlib import Path
 from typing import Any
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 
 from interface.api.serialise import engine_summary, snapshot
-from interface.gui.dashboard_view import EngineView
-from interface.gui.single_spool_open_cycle_liquid_fuel_turbojet_view import VIEW as CONVENTIONAL
-from interface.gui.single_spool_open_cycle_nuclear_turbojet_view import VIEW as NUCLEAR
-
-ENGINES: dict[str, tuple[str, EngineView]] = {
-    "conventional": ("Conventional", CONVENTIONAL),
-    "nuclear": ("Nuclear", NUCLEAR)}
+from interface.gui.engines import ENGINES
+from reports.build import DEFAULT_POINTS, DEFAULT_SWEEPS, build_report
+from reports.report import ReportError
 
 SITE = Path(__file__).parent.parent / "gui" / "react" / "dist"
 
@@ -47,6 +45,27 @@ def evaluate(engine: str, values: dict[str, Any]) -> dict:
     except Exception as e:      # the model raising is an operating point it cannot run, not a server fault
         return {"title": view.title, "subtitle": "", "error": f"The model could not run this point: {e}"}
     return snapshot(view, snap)
+
+
+class ReportRequest(BaseModel):
+    values: dict[str, Any] = {}
+    sweeps: list[str] = DEFAULT_SWEEPS
+    points: int = DEFAULT_POINTS
+
+
+@app.post("/api/engines/{engine}/report", response_class=Response, responses={200: {"content": {"application/pdf": {}}}})
+def report(engine: str, request: ReportRequest) -> Response:
+    """The PDF engineering report for one design point (reports/), built fresh; takes ~15-30 s."""
+    if engine not in ENGINES:
+        raise HTTPException(404, f"Unknown engine '{engine}'. Known: {', '.join(ENGINES)}")
+    with tempfile.TemporaryDirectory() as work:       # one folder per request: builds can run side by side
+        try:
+            pdf = build_report(engine, request.values, request.sweeps, max(3, request.points), Path(work) / f"{engine}.pdf")
+        except ReportError as e:
+            raise HTTPException(422, str(e).splitlines()[0])
+        content = pdf.read_bytes()
+    return Response(content, media_type="application/pdf",
+                    headers={"Content-Disposition": f'attachment; filename="{engine}_report.pdf"'})
 
 
 # Built site, if present

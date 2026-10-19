@@ -20,6 +20,7 @@ verifier/           Simulation/model verification tooling
 materials/           Shared material property data
 graphics/           Engine layout geometry (to scale) for the dashboard
 interface/          FastAPI server (api/) and the React dashboard (gui/react/)
+reports/            PDF engineering reports (LaTeX + pgfplots)
 docs/               Architecture, conventions, and theory documentation
 workflow/           Task planning notes (todo.md, lessons.md)
 ```
@@ -65,6 +66,17 @@ cd interface\gui\react && npm install && npm run build
 
 While editing the site, keep the API running and use `npm run dev` in its folder
 (http://localhost:5173/react/) for instant reload.
+
+PDF engine reports (design point, station flow state, compressor, off-design sweeps) are
+LaTeX with pgfplots figures; they need TeX Live (`latexmk`, `xelatex`) on PATH:
+
+```
+.venv\Scripts\python -m reports.build                      # -> reports/output/conventional.pdf
+.venv\Scripts\python -m reports.build --set M_0=0.7 --sweep M_0 T_tet
+```
+
+The same reports from a terminal UI (`.venv\Scripts\python -m interface.tui.reports_app`) or the
+dashboard's **Export report** button (current slider values, via `POST /api/engines/{id}/report`).
 
 ## Status
 
