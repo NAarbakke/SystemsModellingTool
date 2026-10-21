@@ -1,6 +1,7 @@
 """
-Terminal front end for the PDF reports: pick an engine, edit the design point (live performance preview), choose
-the sweeps, build. The report itself comes from reports/build.py, same as the CLI and the web API.
+Terminal front end for the PDF reports: pick an engine, edit the design point (live performance and station tables,
+the same numbers as the CLI - interface/tables.py), choose the sweeps, build. The report itself comes from
+reports/build.py, same as the CLI and the web API.
 
 Run from the repo root:  .venv/Scripts/python -m interface.tui.reports_app
 """
@@ -9,13 +10,15 @@ import sys
 import time
 from pathlib import Path
 
+from rich.text import Text
 from textual import work
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.widgets import Button, DataTable, Footer, Header, Input, Label, RichLog, Select, SelectionList, Static
 
-from interface.gui.dashboard_view import EngineView, performance_tiles
+from interface.gui.dashboard_view import EngineView
 from interface.gui.engines import ENGINES
+from interface.tables import performance_rows, station_header, station_rows
 from reports.build import DEFAULT_POINTS, DEFAULT_SWEEPS, OUTPUT, build_report
 from reports.report import ReportError
 
@@ -71,10 +74,12 @@ class ReportsApp(App):
                              allow_blank=False, id="engine")
                 yield VerticalScroll(id="inputs")
                 yield Static(id="changed")
-            with Vertical(id="main"):
+            with VerticalScroll(id="main"):
                 yield Static(id="title")
                 yield Label("DESIGN POINT", classes="eyebrow")
                 yield DataTable(id="kpis", show_cursor=False, zebra_stripes=False)
+                yield Label("STATIONS", classes="eyebrow")
+                yield DataTable(id="stations", show_cursor=False, zebra_stripes=False)
                 yield Label("OFF-DESIGN SWEEPS", classes="eyebrow")
                 yield SelectionList[str](id="sweeps")
                 with Horizontal(id="options"):
@@ -88,6 +93,7 @@ class ReportsApp(App):
 
     async def on_mount(self) -> None:
         self.query_one("#kpis", DataTable).add_columns("Quantity", "Value", "Unit")
+        self.query_one("#stations", DataTable).add_columns(*station_header())
         await self.load_engine()
         self.log_line(f"[dim]PDFs go to {OUTPUT}[/]")
 
@@ -102,7 +108,6 @@ class ReportsApp(App):
         sweeps = self.query_one("#sweeps", SelectionList)
         sweeps.clear_options()
         sweeps.add_options([(i.label, i.key, i.key in DEFAULT_SWEEPS) for i in _numeric_inputs(self.view)])
-        self.query_one("#title", Static).update(f"[b]{self.view.title}[/]")
         self.refresh_point()
     #----------------#
 
@@ -116,20 +121,26 @@ class ReportsApp(App):
         self.query_one("#changed", Static).update("SKYF specification" if n == 0 else f"[#ff8a3d]{n} changed[/] from SKYF spec")
 
         table = self.query_one("#kpis", DataTable)
+        stations = self.query_one("#stations", DataTable)
         table.clear()
+        stations.clear()
         try:
             snap = self.view.evaluate(values)
             error = snap.error
         except Exception as e:
             snap, error = None, f"The model could not run this point: {e}"
+        title = f"[b]{self.view.title}[/]"
+        self.query_one("#title", Static).update(f"{title}\n[dim]{snap.subtitle}[/]" if snap else title)
         if error:
             table.add_row("[#e5484d]Not physical[/]", "", "")
             self.query_one("#build", Button).disabled = True
             self.log_line(f"[#e5484d]{error}[/]")
             return
         self.query_one("#build", Button).disabled = False
-        for t in performance_tiles(snap.result):
-            table.add_row(t.label, f"[b]{t.value}[/]", t.unit)
+        for label, value, unit in performance_rows(snap):
+            table.add_row(label, f"[b]{value}[/]", unit)
+        for key, name, *cells in station_rows(self.view, snap):
+            stations.add_row(key, name, *(Text(c, justify="right") for c in cells))
 
     def on_input_changed(self, event: Input.Changed) -> None:
         key = (event.input.id or "").removeprefix("in-")

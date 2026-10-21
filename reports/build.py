@@ -3,7 +3,7 @@ Build an engine report as PDF - one function for every front end (CLI below, TUI
 
 Run from the repo root:
     .venv/Scripts/python -m reports.build
-    .venv/Scripts/python -m reports.build --engine conventional --set M_0=0.7 --set PR=4 --sweep M_0 T_tet
+    .venv/Scripts/python -m reports.build --engine conventional --set V_0=230 --set PR=4 --sweep V_0 h_0 T_tet
 Writes reports/output/<engine>.pdf (LaTeX sources and logs in reports/output/<engine>_build/).
 """
 import argparse
@@ -11,34 +11,13 @@ import sys
 import time
 from pathlib import Path
 
-from interface.gui.dashboard_view import EngineView
 from interface.gui.engines import ENGINES
 from reports.engine_report import engine_report
 from reports.report import Case, ReportError
 
 OUTPUT = Path(__file__).parent / "output"
-DEFAULT_SWEEPS = ["M_0"]
+DEFAULT_SWEEPS = ["V_0"]
 DEFAULT_POINTS = 25
-
-
-def check_values(view: EngineView, values: dict) -> dict:
-    """Input values by key, checked against the engine's inputs; numbers as float."""
-    inputs = {i.key: i for group in view.inputs.values() for i in group}
-    out = {}
-    for key, value in values.items():
-        if key not in inputs:
-            raise ReportError(f"Unknown input '{key}'. Inputs: {', '.join(inputs)}")
-        inp = inputs[key]
-        if inp.options:
-            if value not in inp.options:
-                raise ReportError(f"{key} must be one of: {', '.join(inp.options)}")
-            out[key] = value
-        else:
-            try:
-                out[key] = float(value)
-            except (TypeError, ValueError):
-                raise ReportError(f"{key} must be a number, got '{value}'") from None
-    return out
 
 
 def build_report(engine: str, values: dict, sweeps: list[str] = DEFAULT_SWEEPS, points: int = DEFAULT_POINTS,
@@ -47,7 +26,11 @@ def build_report(engine: str, values: dict, sweeps: list[str] = DEFAULT_SWEEPS, 
     if engine not in ENGINES:
         raise ReportError(f"Unknown engine '{engine}'. Known: {', '.join(ENGINES)}")
     view = ENGINES[engine][1]
-    case = Case.evaluate(engine, view, check_values(view, values))
+    try:
+        values = view.check(values)
+    except ValueError as e:
+        raise ReportError(str(e)) from None
+    case = Case.evaluate(engine, view, values)
     try:
         report = engine_report(case, sweeps, points)
     except ValueError as e:

@@ -1,10 +1,12 @@
 """
-Layout of the core every engine here shares: axial compressor -> heat section -> turbine -> convergent nozzle.
-The heat section is a reactor or a combustor; the caller gives its length.
+Layout of the core every engine here shares: compressor -> heat section -> turbine -> convergent nozzle.
+The compressor is axial (to scale) or centrifugal (nominal); the heat section is a reactor, a combustor or a heat
+exchanger, and the caller gives its length.
 
-To scale where the model has geometry: compressor annulus and blade rows (AxialCompressorGeometry +
+To scale where the model has geometry: axial compressor annulus and blade rows (AxialCompressorGeometry +
 AxialCompressorSizing), reactor length (fuel rod length), nozzle exit radius (A_exit).
-Nominal where it has none yet: combustor, turbine and nozzle lengths, shaft radius, casing radius aft of the compressor.
+Nominal where it has none yet: centrifugal compressor, combustor, heat exchanger, turbine and nozzle lengths, shaft
+radius, casing radius aft of the compressor.
 """
 from dataclasses import dataclass
 
@@ -16,6 +18,8 @@ from subsystems.propulsion.motors.components.nozzles.convergent_nozzle_specs imp
 
 # Nominal dimensions - not modelled yet
 COMBUSTOR_LENGTH = 0.40     # [m]
+HEAT_EXCHANGER_LENGTH = 0.60    # [m]
+CENTRIFUGAL_LENGTH = 0.25   # [m] impeller + diffuser
 TURBINE_LENGTH = 0.30       # [m]
 NOZZLE_LENGTH = 0.40        # [m]
 TRANSITION_LENGTH = 0.08    # [m] hub fairing into / out of the heat section
@@ -57,20 +61,34 @@ def compressor_rows(geometry: AxialCompressorGeometry, sizing: AxialCompressorSi
 
 def core_layout(geometry: AxialCompressorGeometry, sizing: AxialCompressorSizing, L_heat: float,
                 nozzle: ConvergentNozzleSpecs, x_face: float) -> CoreLayout:
-    """Core layout with the compressor face at x_face and a heat section L_heat [m] long."""
-    r_case = geometry.r_tip
-    r_shaft = SHAFT_TO_CASING * r_case
-    r_exit = float(np.sqrt(nozzle.A_exit / np.pi))
-
-    x_3 = x_face + sizing.L
-    x_4 = x_3 + L_heat
-    x_5 = x_4 + TURBINE_LENGTH
-    x_6 = x_5 + NOZZLE_LENGTH
-
+    """Core with a sized axial compressor, its face at x_face, and a heat section L_heat [m] long."""
     # Annulus is held constant through the EGV, so the last stage's radii repeat at the EGV entry
     x_stage, rotors, stators = compressor_rows(geometry, sizing, x_face)
     r_hub = [*sizing.r_hub_stage, sizing.r_hub_stage[-1]]
     r_tip = [*sizing.r_tip_stage, sizing.r_tip_stage[-1]]
+    return _core(
+        x_face + sizing.L, [x_face, *x_stage], [r_hub[0], *r_hub], [r_tip[0], *r_tip], geometry.r_tip,
+        rotors, stators, L_heat, nozzle)
+
+
+def centrifugal_core_layout(r_hub: float, r_tip: float, L_heat: float, nozzle: ConvergentNozzleSpecs,
+                            x_face: float) -> CoreLayout:
+    """Core with a nominal centrifugal compressor (impeller + diffuser in the face annulus r_hub..r_tip)."""
+    L = CENTRIFUGAL_LENGTH
+    rotors = [(x_face + 0.10 * L, x_face + 0.55 * L)]
+    stators = [(x_face + 0.65 * L, x_face + 0.90 * L)]
+    return _core(x_face + L, [x_face], [r_hub], [r_tip], r_tip, rotors, stators, L_heat, nozzle)
+
+
+def _core(x_3: float, x_c: list[float], r_hub_c: list[float], r_tip_c: list[float], r_case: float,
+          rotors: list, stators: list, L_heat: float, nozzle: ConvergentNozzleSpecs) -> CoreLayout:
+    """Heat section, turbine and nozzle aft of a compressor whose walls are given by x_c, r_hub_c, r_tip_c."""
+    r_shaft = SHAFT_TO_CASING * r_case
+    r_exit = float(np.sqrt(nozzle.A_exit / np.pi))
+
+    x_4 = x_3 + L_heat
+    x_5 = x_4 + TURBINE_LENGTH
+    x_6 = x_5 + NOZZLE_LENGTH
 
     # Turbine: one nominal stage
     stators.append((x_4 + 0.10 * TURBINE_LENGTH, x_4 + 0.40 * TURBINE_LENGTH))
@@ -78,10 +96,10 @@ def core_layout(geometry: AxialCompressorGeometry, sizing: AxialCompressorSizing
 
     return CoreLayout(
         x_3=x_3, x_4=x_4, x_5=x_5, x_6=x_6,
-        x_inner=[x_face, *x_stage, x_3, x_3 + TRANSITION_LENGTH, x_4 - TRANSITION_LENGTH, x_4, x_5, x_5 + 0.6 * NOZZLE_LENGTH, x_6],
-        r_inner=[r_hub[0], *r_hub, r_hub[-1], r_shaft, r_shaft, r_hub[-1], r_hub[-1], 0.0, 0.0],
-        x_outer=[x_face, *x_stage, x_3, x_3 + TRANSITION_LENGTH, x_5, x_6],
-        r_outer=[r_tip[0], *r_tip, r_tip[-1], r_case, r_case, r_exit],
+        x_inner=[*x_c, x_3, x_3 + TRANSITION_LENGTH, x_4 - TRANSITION_LENGTH, x_4, x_5, x_5 + 0.6 * NOZZLE_LENGTH, x_6],
+        r_inner=[*r_hub_c, r_hub_c[-1], r_shaft, r_shaft, r_hub_c[-1], r_hub_c[-1], 0.0, 0.0],
+        x_outer=[*x_c, x_3, x_3 + TRANSITION_LENGTH, x_5, x_6],
+        r_outer=[*r_tip_c, r_tip_c[-1], r_case, r_case, r_exit],
         rotors=rotors,
         stators=stators,
         heat=(x_3 + TRANSITION_LENGTH, x_4 - TRANSITION_LENGTH))

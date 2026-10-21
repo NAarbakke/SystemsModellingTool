@@ -75,8 +75,8 @@ export interface Snapshot {
   stations?: Station[]
   streams?: Record<string, string[]>
   layout?: EngineLayout
-  sizing?: Tile[]
-  compressor?: Compressor
+  sizing?: Tile[] | null          // null: no axial compressor to size
+  compressor?: Compressor | null
 }
 
 export async function fetchEngines(): Promise<EngineDef[]> {
@@ -100,7 +100,7 @@ export const defaults = (engine: EngineDef): Record<string, Value> =>
   Object.fromEntries(engine.inputs.flatMap((g) => g.items.map((i) => [i.key, i.default])))
 
 /* PDF engineering report (reports/) for these input values; resolves once the file is downloaded (~15-30 s) */
-export async function downloadReport(engine: string, values: Record<string, Value>, sweeps: string[] = ["M_0"]): Promise<void> {
+export async function downloadReport(engine: string, values: Record<string, Value>, sweeps: string[] = ["V_0"]): Promise<void> {
   const res = await fetch(`/api/engines/${engine}/report`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

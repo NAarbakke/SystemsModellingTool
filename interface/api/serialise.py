@@ -127,6 +127,6 @@ def snapshot(view: EngineView, snap: Snapshot) -> dict:
         "stations": [_station(k, view.stations.get(k, k), snap.layout.station_x[k], stations[k]) for k in stations],
         "streams": view.streams,
         "layout": _layout(snap.layout, stations),
-        "sizing": _tiles(sizing_tiles(snap.sizing)),
-        "compressor": _compressor(snap.geometry, snap.sizing)}
+        "sizing": _tiles(sizing_tiles(snap.sizing)) if snap.sizing else None,
+        "compressor": _compressor(snap.geometry, snap.sizing) if snap.sizing else None}
 #-----------------------------#

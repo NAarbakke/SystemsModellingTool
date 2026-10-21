@@ -21,8 +21,8 @@ materials/           Shared material property data
 graphics/           Engine layout geometry (to scale) for the dashboard
 interface/          FastAPI server (api/) and the React dashboard (gui/react/)
 reports/            PDF engineering reports (LaTeX + pgfplots)
-docs/               Architecture, conventions, and theory documentation
-workflow/           Task planning notes (todo.md, lessons.md)
+documentation/      Architecture, conventions, and theory documentation;
+                      requirements.txt; workflow/ task notes (todo.md, lessons.md)
 ```
 
 ## Setup
@@ -42,19 +42,27 @@ package, install it into `.venv` and add it to `documentation/requirements.txt`.
 
 ## Running
 
-Entry-point scripts live at the repo root, e.g.:
-
-```
-python main_conventional_engine.py
-python main_nuclear_engine.py
-python evaluate_coolants.py
-```
-
-Run them from the repository root so the `subsystems`/`specifications`
+Run everything from the repository root so the `subsystems`/`specifications`
 namespace packages resolve correctly.
 
-Turbojet dashboards (conventional and nuclear: a to-scale engine drawing with
-flow plots underneath, live inputs) are a web site in `interface/gui/react/` (React +
+Every engine (turbojets and turbofans, listed in `interface/gui/engines.py`) runs
+through the same view, so the CLI, the TUI and the dashboard show the same numbers.
+One operating point in the terminal, performance and station tables:
+
+```
+.venv\Scripts\python -m interface.cli.run --engine nuclear_turbofan
+.venv\Scripts\python -m interface.cli.run --engine nuclear_turbofan --set h_0=5000 --set V_0=250
+.venv\Scripts\python -m interface.cli.run --engine nuclear_turbofan --inputs
+```
+
+Inputs default to the SKYF specification (`specifications/SKYF/`); the flight
+condition is altitude and airspeed, with temperature and pressure from the ISA.
+The TUI (`python -m interface.tui.reports_app`) shows the same tables live and
+builds PDF reports. Studies live in `analysis/`, e.g.
+`.venv\Scripts\python -m analysis.heat_transfer.evaluate_coolants`.
+
+Engine dashboards (a to-scale engine drawing with flow plots underneath, live
+inputs) are a web site in `interface/gui/react/` (React +
 Vite + Tailwind + shadcn/ui) on top of a FastAPI server in `interface/api/`.
 Build the site once (needs Node.js), then one command serves everything:
 

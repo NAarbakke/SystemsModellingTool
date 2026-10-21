@@ -20,11 +20,8 @@ from subsystems.propulsion.motors.turbofans.single_spool_closed_cycle_nuclear_fu
 from subsystems.propulsion.coolants.possible_coolants import FLUIDS
 from subsystems.propulsion.motors.components.heat_exchangers.heat_exchangers import HeatExchanger
 from specifications.SKYF.engine import specs_closed_cycle_nuclear as specs
-
-# ── Operating conditions (same as main_nuclear_engine.py) ──────────────
-M_CRUISE = 0.8
-T_ATM    = 250.0   # K
-P_ATM    = 100_000  # Pa
+from specifications.SKYF.initial_conditions.atmosphere import cruise
+from specifications.SKYF.flight_state.cruise import h_cruise, V_cruise
 
 # Coolants to evaluate (everything except air — air is the cold side)
 COOLANT_NAMES = [name for name in FLUIDS if name != "air"]
@@ -75,8 +72,11 @@ def run_engine_with_coolant(coolant_name):
     gas = GasModel()
     try:
         s = replace(specs, hx=replace(specs.hx, hot_fluid=coolant_name))
-        engine = SingleSpoolClosedCycleNuclearTurbofan(gas, s, P_ATM)
-        result = engine.run_point(T_0=T_ATM, P_0=P_ATM, M_0=M_CRUISE)
+        engine = SingleSpoolClosedCycleNuclearTurbofan(gas, s, cruise.P_0)
+        result = engine.run_point(
+            T_0=cruise.T_0,
+            P_0=cruise.P_0,
+            M_0=V_cruise / cruise.a_0(gas))
         return engine, result
     except Exception as e:
         return None, str(e)
@@ -205,7 +205,8 @@ def main():
     print("\n" + "=" * 90)
     print("  COOLANT EVALUATION — SKYF Nuclear Turbofan Heat Exchanger")
     print("=" * 90)
-    print(f"  Operating point: M={M_CRUISE}, T_atm={T_ATM} K, P_atm={P_ATM} Pa")
+    print(f"  Operating point: h={h_cruise:.0f} m, V={V_cruise:.1f} m/s, "
+          f"M_0={V_cruise / cruise.a_0(GasModel()):.3f}, T_0={cruise.T_0:.2f} K, P_0={cruise.P_0:.0f} Pa")
     print(f"  Reactor coolant: T_hot_in={specs.hx.T_hot_in} K, P_hot={specs.hx.P_hot/1e6:.1f} MPa, "
           f"mdot_hot={specs.hx.mdot_hot} kg/s")
     print(f"  Target TET: {specs.hx.T_cold_out} K")

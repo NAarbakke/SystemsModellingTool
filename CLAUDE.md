@@ -5,7 +5,7 @@
 - If something goes sideways, STOP and re-plan immediately – don't keep pushing
 - Use plan mode for verification steps, not just building
 - Write detailed specs upfront to reduce ambiguity
-- Before starting a new task, check always reference documentation in `docs/codebase` to understand codebase architecture and conventions.
+- Before starting a new task, check always reference documentation in `documentation/codebase` to understand codebase architecture and conventions.
 
 ## 2. Subagent Strategy
 - Use subagents liberally to keep main context window clean
@@ -14,7 +14,7 @@
 - One tack per subagent for focused execution
 
 ## 3. Self-Improvement Loop
-- After ANY correction from the user: update `docs/workflow/lessons.md` with the pattern
+- After ANY correction from the user: update `documentation/workflow/lessons.md` with the pattern
 - Write rules for yourself that prevent the same mistake
 - Ruthlessly iterate on these lessons until mistake rate drops
 - Review lessons at session start for relevant project
@@ -42,12 +42,12 @@
 
 # Task Management
 
-1. **Plan First**: Write plan to `docs/workflow/todo.md` with checkable items.
+1. **Plan First**: Write plan to `documentation/workflow/todo.md` with checkable items.
 2. **Verify Plan**: Check in before starting implementation
 3. **Track Progress**: Mark items complete as you go
 4. **Explain Changes**: High-level summary at each step
-5. **Document Results**: Add review section to `docs/workflow/todo.md`
-6. **Capture Lessons**: Update `docs/workflow/lessons.md` after corrections
+5. **Document Results**: Add review section to `documentation/workflow/todo.md`
+6. **Capture Lessons**: Update `documentation/workflow/lessons.md` after corrections
 
 ---
 
@@ -60,17 +60,17 @@
 
 
 # Project Context
-Architecture: @docs/codebase/architecture.md
-Conventions: @docs/codebase/conventions.md
+Architecture: @documentation/codebase/architecture.md
+Conventions: @documentation/codebase/conventions.md
 
 # Accumulated Lessons
-@docs/workflow/lessons.md
+@documentation/workflow/lessons.md
 
 # Task Workflow
-1. Write plan to `docs/workflow/todo.md` with checkable items
+1. Write plan to `documentation/workflow/todo.md` with checkable items
 2. Verify with user before implementing
 3. Mark items complete as you progress
-4. After any user correction, append the lesson to `docs/workflow/lessons.md`
+4. After any user correction, append the lesson to `documentation/workflow/lessons.md`
 
 # Setup
 - Dependencies: `documentation/requirements.txt` (the only requirements file - don't create another one)
@@ -84,6 +84,7 @@ Conventions: @docs/codebase/conventions.md
 - Dynamic only (no static HTML). FastAPI (`interface/api/`) runs the models; the frontend `interface/gui/react/` (React + Vite + Tailwind + shadcn/ui) consumes it.
 - The API sends ready-to-draw geometry (bands, upper half only) from `interface/api/serialise.py`; geometry decisions stay in Python, the frontend only paints.
 - An engine joins the dashboards through `interface/gui/<engine>_view.py`: an `EngineView` (title, stations, streams, inputs, `evaluate()`), framework-neutral. Inputs per component are in `interface/gui/component_inputs.py`.
+- Every front end (CLI `interface/cli/run.py`, TUI, dashboard, reports) runs engines only through `ENGINES` (`interface/gui/engines.py`) -> `view.evaluate(values)`; printed tables come from `interface/tables.py`. No per-engine entry scripts.
 - Engine layout geometry (no drawing) is in `graphics/`; shared engine-view types, plot panels and tiles in `interface/gui/dashboard_view.py`. No plotting libraries: the dashboard and the PDF reports are the only places things are drawn.
 
 # Reports

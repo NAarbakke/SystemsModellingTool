@@ -139,6 +139,8 @@ class SingleSpoolOpenCycleLiquidFuelTurbofan:
                 "0": flow_state_0,
                 "1": flow_state_1,
                 "2": flow_state_2,
+                "25a": flow_state_25a,
+                "25b": flow_state_25b,
                 "3": flow_state_3,
                 "4": flow_state_4,
                 "5": flow_state_5,

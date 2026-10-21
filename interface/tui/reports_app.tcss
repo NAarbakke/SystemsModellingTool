@@ -24,7 +24,8 @@ Footer { background: #111111; }
 
 #main { padding: 0 2; }
 #title { margin: 1 0 0 0; }
-#kpis { height: auto; max-height: 9; background: #111111; border: round $line; }
+#kpis { height: auto; max-height: 11; background: #111111; border: round $line; }
+#stations { height: auto; background: #111111; border: round $line; }
 #sweeps { height: 9; background: #111111; border: round $line; }
 #sweeps:focus { border: round $heat; }
 
@@ -38,4 +39,4 @@ Footer { background: #111111; }
 #build:disabled { background: #3a2a1f; color: $fg-3; }
 #open { border: none; background: #1a1a1a; }
 
-#log { height: 1fr; margin: 1 0; background: #111111; border: round $line; }
+#log { height: 10; margin: 1 0; background: #111111; border: round $line; }

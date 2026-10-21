@@ -14,7 +14,7 @@ import { HEAT_GRADIENT } from "@/lib/heat"
 const DEFAULT_PANELS = ["Temperature", "Pressure", "Velocity", "Mass flow"]
 
 const FLOW_NOTE =
-  "To scale where the model has geometry (compressor annulus and blade rows, reactor length, nozzle exit area); " +
+  "To scale where the model has geometry (axial compressor annulus and blade rows, fan, reactor length, nozzle exit areas); " +
   "other lengths are nominal. Bright rows are rotors, dim rows stators. Colour is total temperature, linear between stations."
 
 export default function App() {
@@ -120,16 +120,18 @@ export default function App() {
               </Section>
               <p className="mt-2.5 max-w-[110ch] text-[12px] text-fg-3">{FLOW_NOTE}</p>
 
-              <Section title="Compressor" aside={<span className="tabular text-[12px] text-fg-3">sized at the operating point</span>}>
-                <div className="grid grid-cols-[1fr_272px]">
-                  <div className="min-w-0 px-2 pt-4">
-                    <CompressorChart compressor={snap.compressor!} stage={stage} onStage={setStage} />
+              {snap.compressor && snap.sizing && (
+                <Section title="Compressor" aside={<span className="tabular text-[12px] text-fg-3">sized at the operating point</span>}>
+                  <div className="grid grid-cols-[1fr_272px]">
+                    <div className="min-w-0 px-2 pt-4">
+                      <CompressorChart compressor={snap.compressor} stage={stage} onStage={setStage} />
+                    </div>
+                    <div className="border-l border-line">
+                      <StageTable sizing={snap.sizing} compressor={snap.compressor} stage={stage} onStage={setStage} />
+                    </div>
                   </div>
-                  <div className="border-l border-line">
-                    <StageTable sizing={snap.sizing!} compressor={snap.compressor!} stage={stage} onStage={setStage} />
-                  </div>
-                </div>
-              </Section>
+                </Section>
+              )}
             </>
           )}
         </div>
@@ -179,7 +181,7 @@ function ExportReport({ engine, values, disabled, onError }: {
     <button
       onClick={run}
       disabled={disabled || busy}
-      title="PDF engineering report: design point, flow state, compressor, Mach sweep"
+      title="PDF engineering report: design point, flow state, compressor, airspeed sweep"
       className="tabular flex h-7 cursor-pointer items-center gap-2 rounded-md border border-line px-2.5 text-[12px] text-fg-2 transition-colors hover:border-line-strong hover:text-fg disabled:cursor-default disabled:opacity-50"
     >
       {busy

@@ -8,8 +8,11 @@ from typing import Any, Callable
 import numpy as np
 
 from graphics.engine_illustration import EngineLayout
+from specifications.SKYF.flight_state.cruise import h_cruise, V_cruise
+from specifications.SKYF.initial_conditions.atmosphere import isa
 from subsystems.propulsion.motors.components.compressors.axial_compressor_geometry import AxialCompressorGeometry
 from subsystems.propulsion.motors.components.compressors.axial_compressor_sizing import AxialCompressorSizing
+from subsystems.propulsion.motors.helpers.gas_model import GasModel
 
 # Station plots: FlowState quantities against station, one panel per quantity. Total and static values of the
 # same quantity share a panel.
@@ -53,10 +56,14 @@ class Snapshot:
     """One evaluated operating point: everything a page shows."""
     result: dict
     layout: EngineLayout
-    geometry: AxialCompressorGeometry
-    sizing: AxialCompressorSizing
     subtitle: str
+    geometry: AxialCompressorGeometry | None = None     # axial compressors only: sized at the operating point
+    sizing: AxialCompressorSizing | None = None
     error: str | None = None        # set when the point is not physical; the page shows it instead of the plots
+
+
+NO_EXPANSION = ("No valid operating point: the nozzle total pressure is below ambient, so the flow cannot expand. "
+                "Lower the pressure ratio or raise the turbine entry temperature.")
 
 
 @dataclass(frozen=True)
@@ -71,15 +78,41 @@ class EngineView:
     def defaults(self) -> dict[str, Any]:
         return {i.key: i.default for group in self.inputs.values() for i in group}
 
+    def check(self, values: dict) -> dict:
+        """Input values by key (e.g. typed on a command line), checked against the inputs; numbers as float.
+        Raises ValueError."""
+        inputs = {i.key: i for group in self.inputs.values() for i in group}
+        out = {}
+        for key, value in values.items():
+            if key not in inputs:
+                raise ValueError(f"Unknown input '{key}'. Inputs: {', '.join(inputs)}")
+            inp = inputs[key]
+            if inp.options:
+                if value not in inp.options:
+                    raise ValueError(f"{key} must be one of: {', '.join(inp.options)}")
+                out[key] = value
+            else:
+                try:
+                    out[key] = float(value)
+                except (TypeError, ValueError):
+                    raise ValueError(f"{key} must be a number, got '{value}'") from None
+        return out
+
 
 FLIGHT_INPUTS = [
-    Input("M_0", "Mach number M₀", 0.80, 0.10, 0.95, 0.01),
-    Input("T_0", "Static temperature T₀ [K]", 250.0, 200.0, 320.0, 1.0),
-    Input("P_0", "Static pressure P₀ [kPa]", 100.0, 20.0, 110.0, 1.0)]
+    Input("h_0", "Altitude h₀ [m]", h_cruise, 0.0, isa.h_max, 100.0),
+    Input("V_0", "True airspeed V₀ [m/s]", V_cruise, 30.0, 320.0, 1.0)]
 
 
-def flight_subtitle(values: dict) -> str:
-    return f"T₀ {values['T_0']:g} K · P₀ {values['P_0']:g} kPa · M₀ {values['M_0']:g}"
+def freestream(values: dict, gas: GasModel) -> dict[str, float]:
+    """Altitude and airspeed inputs -> run_point() freestream (T_0, P_0, M_0), through the ISA."""
+    atmosphere = isa.conditions(values["h_0"])
+    return {"T_0": atmosphere.T_0, "P_0": atmosphere.P_0, "M_0": values["V_0"] / atmosphere.a_0(gas)}
+
+
+def flight_subtitle(values: dict, flow: dict[str, float]) -> str:
+    return (f"h₀ {values['h_0']:g} m · V₀ {values['V_0']:g} m/s · "
+            f"T₀ {flow['T_0']:.4g} K · P₀ {flow['P_0'] * 1e-3:.4g} kPa · M₀ {flow['M_0']:.3g}")
 #-------------------------------------------------------#
 
 
@@ -96,7 +129,7 @@ class Tile:
 def performance_tiles(result: dict) -> list[Tile]:
     tiles = []
     for key, value in result.items():
-        if key == "stations":
+        if not isinstance(value, (int, float, np.number, np.bool_)):     # stations, component results (e.g. hx_result)
             continue
         label, unit, scale = KPIS.get(key, (key, "", 1.0))
         if isinstance(value, (bool, np.bool_)):

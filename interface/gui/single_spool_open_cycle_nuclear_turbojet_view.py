@@ -9,13 +9,10 @@ from graphics.turbojet_layout import turbojet_layout
 from interface.gui.component_inputs import (
     apply_axial_compressor, apply_convergent_nozzle, apply_reactor, axial_compressor_inputs, convergent_nozzle_inputs,
     reactor_inputs)
-from interface.gui.dashboard_view import FLIGHT_INPUTS, EngineView, Snapshot, flight_subtitle
+from interface.gui.dashboard_view import FLIGHT_INPUTS, NO_EXPANSION, EngineView, Snapshot, flight_subtitle, freestream
 from specifications.SKYF.engine import specs_open_cycle_nuclear_turbojet as base
 from subsystems.propulsion.motors.helpers.gas_model import GasModel
 from subsystems.propulsion.motors.turbojets.single_spool_open_cycle_nuclear_turbojet import SingleSpoolOpenCycleNuclearTurbojet
-
-NO_EXPANSION = ("No valid operating point: the nozzle total pressure is below ambient, so the flow cannot expand. "
-                "Lower the pressure ratio or raise the turbine entry temperature.")
 
 # Station numbering follows run_point()
 STATIONS = {
@@ -33,12 +30,13 @@ def evaluate(values: dict) -> Snapshot:
         base, compressor=compressor, compressor_geometry=geometry,
         reactor=apply_reactor(base.reactor, values), nozzle=apply_convergent_nozzle(base.nozzle, values))
 
-    P_0 = values["P_0"] * 1e3
-    engine = SingleSpoolOpenCycleNuclearTurbojet(GasModel(), specs, P_0)
-    result = engine.run_point(T_0=values["T_0"], P_0=P_0, M_0=values["M_0"])
+    gas = GasModel()
+    flow = freestream(values, gas)
+    engine = SingleSpoolOpenCycleNuclearTurbojet(gas, specs, flow["P_0"])
+    result = engine.run_point(**flow)
     sizing = engine.compressor.compute_geometry(result["stations"]["1"], result["stations"]["3"])
     return Snapshot(
-        result, turbojet_layout(specs, sizing), geometry, sizing, flight_subtitle(values),
+        result, turbojet_layout(specs, sizing), flight_subtitle(values, flow), geometry, sizing,
         error=None if np.isfinite(result["F_total"]) else NO_EXPANSION)
 
 
