@@ -10,7 +10,7 @@ from graphics.turbofan_layout import turbofan_layout
 from interface.gui.component_inputs import (
     apply_axial_compressor, apply_convergent_nozzle, apply_fan, apply_reactor, axial_compressor_inputs,
     convergent_nozzle_inputs, fan_inputs, reactor_inputs)
-from interface.gui.dashboard_view import FLIGHT_INPUTS, NO_EXPANSION, EngineView, Snapshot, flight_subtitle, freestream
+from interface.gui.dashboard_view import NO_EXPANSION, EngineView, Snapshot, flight_subtitle, freestream
 from specifications.SKYF.engine import specs_open_cycle_nuclear as base
 from subsystems.propulsion.motors.helpers.gas_model import GasModel
 from subsystems.propulsion.motors.turbofans.single_spool_open_cycle_nuclear_fuel_turbofan import SingleSpoolOpenCycleNuclearTurbofan
@@ -39,12 +39,12 @@ def evaluate(values: dict) -> Snapshot:
         bypass_nozzle=apply_convergent_nozzle(base.bypass_nozzle, values, key="A_exit_bypass"))
 
     gas = GasModel()
-    flow = freestream(values, gas)
+    flow = freestream(gas)
     engine = SingleSpoolOpenCycleNuclearTurbofan(gas, specs, flow["P_0"])
     result = engine.run_point(**flow)
     sizing = engine.compressor.compute_geometry(result["stations"]["25a"], result["stations"]["3"])
     return Snapshot(
-        result, turbofan_layout(specs, sizing), flight_subtitle(values, flow), geometry, sizing,
+        result, turbofan_layout(specs, sizing), flight_subtitle(flow), geometry, sizing,
         error=None if np.isfinite(result["F_total"]) else NO_EXPANSION)
 
 
@@ -53,7 +53,6 @@ VIEW = EngineView(
     stations=STATIONS,
     streams={"Core": ["0", "1", "2", "25a", "3", "4", "5", "6"], "Bypass": ["2", "25b", "7", "8"]},
     inputs={
-        "Flight condition": FLIGHT_INPUTS,
         "Fan": fan_inputs(base.fan, base.bypass_ratio),
         "Compressor": axial_compressor_inputs(base.compressor, base.compressor_geometry),
         "Reactor": reactor_inputs(base.reactor),

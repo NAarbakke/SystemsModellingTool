@@ -4,7 +4,7 @@ and the TUI (interface/tables.py).
 
 Run from the repo root:
     .venv/Scripts/python -m interface.cli.run
-    .venv/Scripts/python -m interface.cli.run --engine closed_cycle_nuclear_turbofan --set h_0=5000 --set V_0=250
+    .venv/Scripts/python -m interface.cli.run --engine closed_cycle_nuclear_turbofan --set PR=4 --set T_tet=1300
     .venv/Scripts/python -m interface.cli.run --engine nuclear --inputs
 """
 import argparse

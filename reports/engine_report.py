@@ -11,6 +11,7 @@ from reports.sections.nomenclature import Nomenclature
 from reports.sections.off_design import OffDesign
 from reports.sections.station_results import StationResults
 from reports.sweep import run_sweep
+from specifications.SKYF.flight_state.cruise import h_cruise, V_cruise
 from subsystems.propulsion.motors.helpers.gas_model import GasModel
 
 AUTHOR = "Systems Modelling Tool"
@@ -23,9 +24,9 @@ def _kpi(case: Case, key: str) -> str:
 
 def _abstract(case: Case, sweep_keys: list[str]) -> str:
     v = case.values
-    flow = freestream(v, GasModel())
+    flow = freestream(GasModel())
     text = (rf"This report documents the design-point performance of the {escape(case.view.title.lower())} at "
-            rf"an altitude of {num(v['h_0'], 4)}~m and a true airspeed of {num(v['V_0'], 3)}~m/s: a flight Mach number of "
+            rf"an altitude of {num(h_cruise, 4)}~m and a true airspeed of {num(V_cruise, 3)}~m/s: a flight Mach number of "
             rf"{num(flow['M_0'], 3)}, static temperature {num(flow['T_0'], 4)}~K and static pressure {num(flow['P_0'] * 1e-3, 4)}~kPa "
             rf"(International Standard Atmosphere). The engine delivers a net thrust of {_kpi(case, 'F_total')}")
     text += rf" at a TSFC of {_kpi(case, 'TSFC')}." if "TSFC" in case.snap.result else "."

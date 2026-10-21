@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from subsystems.propulsion.motors.components.inlets.subsonic_inlet_specs import SubsonicInletSpecs
 from subsystems.propulsion.motors.components.compressors.fan_specs import FanSpecs
-from subsystems.propulsion.motors.components.compressors.centrifugal_compressor_specs import CentrifugalCompressorSpecs
+from subsystems.propulsion.motors.components.compressors.axial_compressor_specs import AxialCompressorSpecs
+from subsystems.propulsion.motors.components.compressors.axial_compressor_geometry import AxialCompressorGeometry
 from subsystems.propulsion.motors.components.combustors.combustor_specs import CombustorSpecs
 from subsystems.propulsion.motors.components.heat_exchangers.heat_exchanger_specs import HeatExchangerSpecs
 from subsystems.propulsion.motors.components.turbines.axial_turbine_specs import AxialTurbineSpecs
@@ -17,7 +18,8 @@ class SingleSpoolClosedCycleNuclearTurbofanSpecifications:
     bypass_ratio: float                     # [-]
     subsonic_inlet: SubsonicInletSpecs
     fan: FanSpecs
-    compressor: CentrifugalCompressorSpecs
+    compressor: AxialCompressorSpecs
+    compressor_geometry: AxialCompressorGeometry
     combustor: CombustorSpecs
     hx: HeatExchangerSpecs
     turbine: AxialTurbineSpecs

@@ -3,7 +3,7 @@ Build an engine report as PDF - one function for every front end (CLI below, TUI
 
 Run from the repo root:
     .venv/Scripts/python -m reports.build
-    .venv/Scripts/python -m reports.build --engine conventional --set V_0=230 --set PR=4 --sweep V_0 h_0 T_tet
+    .venv/Scripts/python -m reports.build --engine conventional --set PR=4 --sweep PR T_tet
 Writes reports/output/<engine>.pdf (LaTeX sources and logs in reports/output/<engine>_build/).
 """
 import argparse
@@ -16,7 +16,7 @@ from reports.engine_report import engine_report
 from reports.report import Case, ReportError
 
 OUTPUT = Path(__file__).parent / "output"
-DEFAULT_SWEEPS = ["V_0"]
+DEFAULT_SWEEPS = ["PR"]
 DEFAULT_POINTS = 25
 
 

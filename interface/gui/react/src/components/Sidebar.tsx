@@ -2,7 +2,6 @@ import type { EngineDef, InputDef, Value } from "@/lib/api"
 import { fmt } from "@/lib/format"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 
 interface Props {
   engines: EngineDef[]
@@ -22,11 +21,12 @@ export function Sidebar({ engines, engine, values, onEngine, onChange, onReset }
     <aside className="flex h-full flex-col border-r border-line bg-surface">
       <div className="border-b border-line p-4">
         <div className="eyebrow mb-2.5">Engine</div>
-        <ToggleGroup type="single" value={engine.id} onValueChange={(id) => id && onEngine(id)}>
-          {engines.map((e) => (
-            <ToggleGroupItem key={e.id} value={e.id}>{e.label}</ToggleGroupItem>
-          ))}
-        </ToggleGroup>
+        <Select value={engine.id} onValueChange={onEngine}>
+          <SelectTrigger><SelectValue /></SelectTrigger>
+          <SelectContent>
+            {engines.map((e) => <SelectItem key={e.id} value={e.id}>{e.label}</SelectItem>)}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 pb-6">

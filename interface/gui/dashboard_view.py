@@ -99,19 +99,14 @@ class EngineView:
         return out
 
 
-FLIGHT_INPUTS = [
-    Input("h_0", "Altitude h₀ [m]", h_cruise, 0.0, isa.h_max, 100.0),
-    Input("V_0", "True airspeed V₀ [m/s]", V_cruise, 30.0, 320.0, 1.0)]
+def freestream(gas: GasModel) -> dict[str, float]:
+    """Fixed SKYF cruise flight state (altitude, airspeed) -> run_point() freestream (T_0, P_0, M_0), through the ISA."""
+    atmosphere = isa.conditions(h_cruise)
+    return {"T_0": atmosphere.T_0, "P_0": atmosphere.P_0, "M_0": V_cruise / atmosphere.a_0(gas)}
 
 
-def freestream(values: dict, gas: GasModel) -> dict[str, float]:
-    """Altitude and airspeed inputs -> run_point() freestream (T_0, P_0, M_0), through the ISA."""
-    atmosphere = isa.conditions(values["h_0"])
-    return {"T_0": atmosphere.T_0, "P_0": atmosphere.P_0, "M_0": values["V_0"] / atmosphere.a_0(gas)}
-
-
-def flight_subtitle(values: dict, flow: dict[str, float]) -> str:
-    return (f"h₀ {values['h_0']:g} m · V₀ {values['V_0']:g} m/s · "
+def flight_subtitle(flow: dict[str, float]) -> str:
+    return (f"h₀ {h_cruise:g} m · V₀ {V_cruise:g} m/s · "
             f"T₀ {flow['T_0']:.4g} K · P₀ {flow['P_0'] * 1e-3:.4g} kPa · M₀ {flow['M_0']:.3g}")
 #-------------------------------------------------------#
 

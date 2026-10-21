@@ -9,8 +9,8 @@ from interface.gui.single_spool_open_cycle_nuclear_turbofan_view import VIEW as 
 from interface.gui.single_spool_open_cycle_nuclear_turbojet_view import VIEW as NUCLEAR
 
 ENGINES: dict[str, tuple[str, EngineView]] = {
-    "conventional": ("Conventional turbojet", CONVENTIONAL),
-    "nuclear": ("Nuclear turbojet", NUCLEAR),
-    "conventional_turbofan": ("Conventional turbofan", CONVENTIONAL_TURBOFAN),
+    "conventional": ("Conventional turbojet (open cycle)", CONVENTIONAL),
+    "nuclear": ("Nuclear turbojet (open cycle)", NUCLEAR),
+    "conventional_turbofan": ("Conventional turbofan (open cycle)", CONVENTIONAL_TURBOFAN),
     "nuclear_turbofan": ("Nuclear turbofan (open cycle)", NUCLEAR_TURBOFAN),
     "closed_cycle_nuclear_turbofan": ("Nuclear turbofan (closed cycle)", CLOSED_CYCLE_NUCLEAR_TURBOFAN)}

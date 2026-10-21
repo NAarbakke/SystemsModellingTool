@@ -81,7 +81,7 @@ export default function App() {
             <Logo />
             <span className="text-fg-2">SKYF</span><Slash />
             <span className="text-fg-2">Propulsion</span><Slash />
-            <span className="text-fg">{engine.label} turbojet</span>
+            <span className="text-fg">{engine.label}</span>
           </nav>
           <div className="flex items-center gap-5">
             <ExportReport engine={engineId} values={current} disabled={!!snap?.error || !!apiError} onError={setApiError} />

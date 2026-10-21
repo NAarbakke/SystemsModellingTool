@@ -2,7 +2,7 @@ from subsystems.propulsion.motors.helpers.gas_model import GasModel
 from subsystems.propulsion.motors.helpers.freestream_to_total import freestream_to_total
 from subsystems.propulsion.motors.turbofans.single_spool_closed_cycle_nuclear_fuel_turbofan_specs import SingleSpoolClosedCycleNuclearTurbofanSpecifications
 from subsystems.propulsion.motors.components.inlets.subsonic_inlet import SubsonicInlet
-from subsystems.propulsion.motors.components.compressors.centrifugal_compressor import CentrifugalCompressor
+from subsystems.propulsion.motors.components.compressors.axial_compressor import AxialCompressor
 from subsystems.propulsion.motors.components.compressors.fan import Fan
 from subsystems.propulsion.motors.components.splitters.splitters import CoreSplitter, BypassSplitter
 from subsystems.propulsion.motors.components.heat_exchangers.heat_exchangers import HeatExchangerComponent
@@ -25,7 +25,7 @@ class SingleSpoolClosedCycleNuclearTurbofan:
         self.fan = Fan(specs.fan, gas, name="fan")
         self.core_splitter = CoreSplitter(specs.bypass_ratio, gas, name="core_splitter")
         self.bypass_splitter = BypassSplitter(specs.bypass_ratio, gas, name="bypass_splitter")
-        self.compressor = CentrifugalCompressor(specs.compressor, gas, name="compressor")
+        self.compressor = AxialCompressor(specs.compressor, specs.compressor_geometry, gas, name="Axial compressor")
         self.heat_exchanger = HeatExchangerComponent(specs.hx, gas, name="heat_exchanger")
         self.turbine = AxialTurbine(specs.turbine, gas, self.fan, self.compressor, name="turbine")
         self.core_nozzle = ConvergentNozzle(specs.core_nozzle, P_atm, gas, name="core nozzle")

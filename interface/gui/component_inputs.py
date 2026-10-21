@@ -49,17 +49,13 @@ def axial_compressor_inputs(specs: AxialCompressorSpecs, geometry: AxialCompress
         Input("eta_poly", "Polytropic efficiency", specs.eta_poly, 0.80, 0.95, 0.01),
         Input("psi", "Stage loading ψ", specs.psi, 0.20, 0.50, 0.01),
         Input("U_tip", "Tip speed [m/s]", specs.U_tip, 250.0, 500.0, 10.0),
-        Input("r_tip", "Inlet tip radius [m]", geometry.r_tip, 0.15, 0.60, 0.01),
-        Input("hub_to_tip", "Inlet hub-to-tip ratio", geometry.hub_to_tip, 0.30, 0.80, 0.01),
         Input("annulus_type", "Annulus", geometry.annulus_type.name,
               options={a.name: a.name.replace("_", " ").capitalize() for a in AnnulusType})]
 
 
 def apply_axial_compressor(specs: AxialCompressorSpecs, geometry: AxialCompressorGeometry, values: dict):
     specs = replace(specs, PR=values["PR"], eta_poly=values["eta_poly"], psi=values["psi"], U_tip=values["U_tip"])
-    geometry = replace(
-        geometry, r_tip=values["r_tip"], r_hub=values["hub_to_tip"] * values["r_tip"],
-        annulus_type=AnnulusType[values["annulus_type"]])
+    geometry = replace(geometry, annulus_type=AnnulusType[values["annulus_type"]])
     return specs, geometry
 #--------------------------#
 

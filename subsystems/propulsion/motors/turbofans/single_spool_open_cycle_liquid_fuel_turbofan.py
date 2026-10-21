@@ -3,7 +3,6 @@ from subsystems.propulsion.motors.helpers.freestream_to_total import freestream_
 from subsystems.propulsion.motors.turbofans.single_spool_open_cycle_liquid_fuel_turbofan_specs import SingleSpoolOpenCycleLiquidFuelTurbofanSpecifications
 from subsystems.propulsion.motors.components.inlets.subsonic_inlet import SubsonicInlet
 from subsystems.propulsion.motors.components.compressors.axial_compressor import AxialCompressor
-from subsystems.propulsion.motors.components.compressors.centrifugal_compressor import CentrifugalCompressor
 from subsystems.propulsion.motors.components.compressors.fan import Fan
 from subsystems.propulsion.motors.components.splitters.splitters import CoreSplitter, BypassSplitter
 from subsystems.propulsion.motors.components.combustors.combustor import Combustor
@@ -55,7 +54,7 @@ class SingleSpoolOpenCycleLiquidFuelTurbofan:
         self.fan = Fan(specs.fan, gas, name="fan")
         self.core_splitter = CoreSplitter(specs.bypass_ratio, gas, name="core_splitter")
         self.bypass_splitter = BypassSplitter(specs.bypass_ratio, gas, name="bypass_splitter")
-        self.compressor = CentrifugalCompressor(specs.compressor, gas, name="compressor")
+        self.compressor = AxialCompressor(specs.compressor, specs.compressor_geometry, gas, name="Axial compressor")
         self.combustor = Combustor(specs.combustor, gas, name="combustor")
         self.turbine = AxialTurbine(specs.turbine, gas, self.fan, self.compressor, name="turbine")
         self.core_nozzle = ConvergentNozzle(specs.core_nozzle, P_atm, gas, name="core nozzle")
