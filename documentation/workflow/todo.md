@@ -100,7 +100,7 @@ conventional and a nuclear turbojet; a NiceGUI version of the same to compare lo
 ### Model: conventional turbojet (new, mirrors the nuclear one with the reactor swapped for the combustor)
 - [x] `turbojets/single_spool_open_cycle_liquid_fuel_turbojet_specs.py`: inlet, compressor, compressor_geometry, combustor, turbine, nozzle
 - [x] `turbojets/single_spool_open_cycle_liquid_fuel_turbojet.py`: stations 0-1-3-4-5-6, m_dot from compressor face,
-      thrust with fuel mass (`m_dot_exit*V_exit - m_dot_air*V_0 + (P_6-P_0)*A`), returns F_total, Power, TSFC, m_dot_fuel
+      thrust with fuel mass (`m_dot_exit*V_exit - m_dot_air*V_0 + (P_6-P_0)*A`), returns Thrust, Power, TSFC, m_dot_fuel
 - [x] `specifications/SKYF/engine.py`: `specs_open_cycle_liquid_fuel_turbojet` from the existing SKYF component values
 
 ### Graphics: core layout works for either heat source
@@ -152,7 +152,7 @@ Imports flow one way: `specifications/` → `subsystems/`, never back.
 
 ## Review
 - Circular import gone: no component imports `specifications/` for the axial compressor; `engine.py` imports the templates.
-- `main_nuclear_engine.py` runs end to end (F_total 49.9 kN). Also needed a stale-path fix in `heat_exchangers.py`
+- `main_nuclear_engine.py` runs end to end (Thrust 49.9 kN). Also needed a stale-path fix in `heat_exchangers.py`
   (`materials.` → `properties.materials.`, left over from the restructure).
 - Open-cycle engine: `run_point()` runs; sizing at cruise → U_mean 262 m/s, V_axial 131 m/s, M_rel_tip 1.09, 4 stages, L 0.76 m.
   `main_open_cycle_nuclear_engine.py` then stops in the pgf plot: LaTeX package `underscore.sty` isn't installed (TeX setup, not code).
@@ -181,7 +181,7 @@ empty — so `SingleSpoolOpenCycleNuclearTurbofan`; user fixes the WIP import bl
 ## Review
 - Engine-agnostic: a new engine only needs its `streams` list (alternating station / component names, matching
   `run_point()` station keys). Branches (bypass) start at their parent station and are drawn as elbows.
-- Verified on real model output (F_total 48.99 kN, Q_reactor 99.72 MW, 11 stations). Asserts: 8 KPI tiles, 11 station
+- Verified on real model output (Thrust 48.99 kN, Q_reactor 99.72 MW, 11 stations). Asserts: 8 KPI tiles, 11 station
   rows, `None` → "—". Screenshots checked for label collisions and overflow. Stream colours validated with the dataviz
   palette validator (all checks pass).
 - Plotly.js is loaded from CDN (file ~35 kB, needs internet to view). Light theme only.

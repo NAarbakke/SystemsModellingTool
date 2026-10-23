@@ -8,7 +8,7 @@ from reports.latex import escape, in_sentence, num, split_unit
 from reports.report import Case, Section
 from reports.sweep import Sweep
 
-OUTPUTS = ["F_total", "TSFC"]       # run_point() scalars plotted against each swept input
+OUTPUTS = ["Thrust", "TSFC"]       # run_point() scalars plotted against each swept input
 
 
 class OffDesign(Section):

@@ -1,5 +1,4 @@
 import numpy as np
-from numpy.matlib import sqrt
 from subsystems.propulsion.motors.components.base_component import Component
 from subsystems.propulsion.motors.helpers.gas_model import GasModel
 from subsystems.propulsion.motors.helpers.flow_state import FlowState
@@ -13,20 +12,18 @@ class ConvergentNozzle(Component):
     Simple convergent nozzle with isentropic efficiency.
     """
 
-    def __init__(self, specs: ConvergentNozzleSpecs, P_atm: float, gas_model: GasModel, name: str = "convergent nozzle"):
-        super().__init__(gas_model, name)
+    def __init__(self, specs: ConvergentNozzleSpecs, gas_model: GasModel, name: str = "convergent nozzle"):
+        super().__init__(gas_model, name, specs=specs)
         self.eta_isen = specs.eta_isen
         self.A_throat = specs.A_exit
         self.A_exit = specs.A_exit
         self.C_discharge = specs.C_discharge
-        self.P_atm = P_atm
 
-    def process(self, flow: FlowState) -> FlowState:
+    def process(self, flow: FlowState, P_atm: float) -> FlowState:
         """
-        Expand from inlet total state to ambient (or choke).
+        Expand from inlet total state to ambient P_atm [Pa] (or choke).
         Returns exit FlowState with static quantities and velocity.
         """
-        self.last_inlet = flow
         Tt_in = flow.Tt
         Pt_in = flow.Pt
 
@@ -37,7 +34,7 @@ class ConvergentNozzle(Component):
         # critical pressure ratio (P_c / P*) = (Pt_in / P*)
         PR_crit = ((gamma + 1) / 2)**(gamma / (gamma - 1))
 
-        if (Pt_in / self.P_atm) > PR_crit:
+        if (Pt_in / P_atm) > PR_crit:
             # choked, so M_exit = 1 = M_throat
             M_exit = 1.0
             #T_throat = Tt_in * (2 / (gamma + 1)) # = T_exit
@@ -52,7 +49,7 @@ class ConvergentNozzle(Component):
             #m_dot = ((Pt_in * A_throat) / np.sqrt(Tt_in)) * np.sqrt(gamma / R) * (2 / (gamma + 1))**((gamma + 1) / (2 * (gamma - 1)))
         else:
             # unchoked, so P_exit = P_atm
-            P_exit = self.P_atm
+            P_exit = P_atm
             M_exit = np.sqrt((2 / (gamma - 1)) * ((Pt_in / P_exit)**((gamma - 1) / gamma) - 1))
             #T_exit = Tt_in * (P_exit / Pt_in) ** ((gamma - 1.0) / gamma)   #alternative eq.
             T_exit = Tt_in / (1.0 + 0.5 * (gamma - 1.0) * M_exit**2)
@@ -79,5 +76,4 @@ class ConvergentNozzle(Component):
             V=V_exit,
             M=M_exit)
 
-        self.last_exit = out
         return out

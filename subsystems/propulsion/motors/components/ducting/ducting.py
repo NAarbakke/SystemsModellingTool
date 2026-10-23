@@ -5,11 +5,10 @@ from subsystems.propulsion.motors.components.ducting.duct_specs import DuctSpecs
 
 class Duct(Component):
     def __init__(self, specs: DuctSpecs, gas_model: GasModel, name: str = "duct"):
-        super().__init__(gas_model, name)
+        super().__init__(gas_model, name, specs=specs)
         self.PR_loss = specs.PR_loss
 
     def process(self, flow: FlowState) -> FlowState:
-        self.last_inlet = flow
         Tt_in = flow.Tt
         Pt_in = flow.Pt
         m_dot = flow.m_dot
@@ -22,5 +21,4 @@ class Duct(Component):
             Pt=Pt_out,
             m_dot=m_dot)
 
-        self.last_exit = out
         return out

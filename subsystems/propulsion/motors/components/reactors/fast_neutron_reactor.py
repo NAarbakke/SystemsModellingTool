@@ -29,7 +29,7 @@ class FastNeutronReactor(Component):
     """
 
     def __init__(self, specs: FastNeutronReactorSpecs, gas_model: GasModel, name: str = "reactor"):
-        super().__init__(gas_model, name)
+        super().__init__(gas_model, name, specs=specs)
         self.T_tet = specs.T_tet
         self.PR_loss = specs.PR_loss
         self.fuel_material = specs.fuel_material
@@ -56,7 +56,6 @@ class FastNeutronReactor(Component):
         self.last_within_limits: bool = True
 
     def process(self, flow: FlowState) -> FlowState:
-        self.last_inlet = flow
         
         Tt_in = flow.Tt
         Pt_in = flow.Pt
@@ -82,5 +81,4 @@ class FastNeutronReactor(Component):
             Pt=Pt_out,
             m_dot=flow.m_dot)
 
-        self.last_exit = out
         return out

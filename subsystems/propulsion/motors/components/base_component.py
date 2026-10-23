@@ -13,13 +13,16 @@ class Component(ABC):
       - Pt (total pressure)
       - cp, gamma (thermo properties)
       - m_dot (mass flow)
+
+    specs (performance characteristics) and geometry (physical dimensions) are optional:
+    not every component has them defined yet.
     """
 
-    def __init__(self, gas_model: GasModel, name: str = ""):
+    def __init__(self, gas_model: GasModel, name: str = "", specs: object | None = None, geometry: object | None = None):
         self.gas = gas_model
         self.name = name
-        self.last_inlet: FlowState | None = None
-        self.last_exit: FlowState | None = None
+        self.specs = specs
+        self.geometry = geometry
 
     @abstractmethod
     def process(self, flow: FlowState) -> FlowState:

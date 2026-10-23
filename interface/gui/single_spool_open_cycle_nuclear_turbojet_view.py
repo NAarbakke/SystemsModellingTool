@@ -7,37 +7,32 @@ import numpy as np
 
 from graphics.turbojet_layout import turbojet_layout
 from interface.gui.component_inputs import (
-    apply_axial_compressor, apply_convergent_nozzle, apply_reactor, axial_compressor_inputs, convergent_nozzle_inputs,
-    reactor_inputs)
-from interface.gui.dashboard_view import NO_EXPANSION, EngineView, Snapshot, flight_subtitle, freestream
+    apply_axial_compressor, apply_convergent_nozzle, apply_inlet, apply_reactor, axial_compressor_inputs,
+    convergent_nozzle_inputs, inlet_inputs, reactor_inputs)
+from interface.gui.dashboard_view import NO_EXPANSION, EngineView, Snapshot, flight_subtitle
 from specifications.SKYF.engine import specs_open_cycle_nuclear_turbojet as base
+from specifications.SKYF.flight_state.cruise import cruise
 from subsystems.propulsion.motors.helpers.gas_model import GasModel
+from subsystems.propulsion.motors.helpers.stations import stations
 from subsystems.propulsion.motors.turbojets.single_spool_open_cycle_nuclear_turbojet import SingleSpoolOpenCycleNuclearTurbojet
 
-# Station numbering follows run_point()
-STATIONS = {
-    "0": "Freestream",
-    "1": "Compressor face",
-    "3": "Compressor exit",
-    "4": "Reactor exit",
-    "5": "Turbine exit",
-    "6": "Nozzle exit"}
+STATIONS = stations("0", "1", "2", "3", "4", "5", "9")
 
 
 def evaluate(values: dict) -> Snapshot:
+    inlet, inlet_geometry = apply_inlet(base.subsonic_inlet, base.subsonic_inlet_geometry, values)
     compressor, geometry = apply_axial_compressor(base.compressor, base.compressor_geometry, values)
     specs = replace(
-        base, compressor=compressor, compressor_geometry=geometry,
-        reactor=apply_reactor(base.reactor, values), nozzle=apply_convergent_nozzle(base.nozzle, values))
+        base, subsonic_inlet=inlet, subsonic_inlet_geometry=inlet_geometry, compressor=compressor,
+        compressor_geometry=geometry, reactor=apply_reactor(base.reactor, values),
+        nozzle=apply_convergent_nozzle(base.nozzle, values))
 
-    gas = GasModel()
-    flow = freestream(gas)
-    engine = SingleSpoolOpenCycleNuclearTurbojet(gas, specs, flow["P_0"])
-    result = engine.run_point(**flow)
-    sizing = engine.compressor.compute_geometry(result["stations"]["1"], result["stations"]["3"])
+    engine = SingleSpoolOpenCycleNuclearTurbojet(GasModel(), specs)
+    result = engine.run_point(cruise)
+    sizing = engine.compressor.compute_geometry(result["stations"]["2"], result["stations"]["3"])
     return Snapshot(
-        result, turbojet_layout(specs, sizing), flight_subtitle(flow), geometry, sizing,
-        error=None if np.isfinite(result["F_total"]) else NO_EXPANSION)
+        result, turbojet_layout(specs, sizing), flight_subtitle(cruise), geometry, sizing,
+        error=None if np.isfinite(result["Thrust"]) else NO_EXPANSION)
 
 
 VIEW = EngineView(
@@ -45,6 +40,7 @@ VIEW = EngineView(
     stations=STATIONS,
     streams={"Core": list(STATIONS)},
     inputs={
+        "Inlet": inlet_inputs(base.subsonic_inlet, base.subsonic_inlet_geometry),
         "Compressor": axial_compressor_inputs(base.compressor, base.compressor_geometry),
         "Reactor": reactor_inputs(base.reactor),
         "Nozzle": convergent_nozzle_inputs(base.nozzle)},

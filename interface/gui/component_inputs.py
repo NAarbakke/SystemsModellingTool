@@ -13,8 +13,24 @@ from subsystems.propulsion.motors.components.compressors.axial_compressor_specs 
 from subsystems.propulsion.motors.components.compressors.centrifugal_compressor_specs import CentrifugalCompressorSpecs
 from subsystems.propulsion.motors.components.compressors.fan_specs import FanSpecs
 from subsystems.propulsion.motors.components.heat_exchangers.heat_exchanger_specs import HeatExchangerSpecs
+from subsystems.propulsion.motors.components.inlets.subsonic_inlet_geometry import SubsonicInletGeometry
+from subsystems.propulsion.motors.components.inlets.subsonic_inlet_specs import SubsonicInletSpecs
 from subsystems.propulsion.motors.components.nozzles.convergent_nozzle_specs import ConvergentNozzleSpecs
 from subsystems.propulsion.motors.components.reactors.fast_neutron_reactor_specs import FastNeutronReactorSpecs
+
+
+#---- Subsonic inlet ----#
+def inlet_inputs(specs: SubsonicInletSpecs, geometry: SubsonicInletGeometry) -> list[Input]:
+    return [
+        Input("PR_inlet", "Pressure recovery", specs.PR, 0.90, 1.00, 0.005),
+        Input("r_lip", "Lip radius [m]", geometry.r_lip, 0.10, 1.00, 0.01)]
+
+
+def apply_inlet(specs: SubsonicInletSpecs, geometry: SubsonicInletGeometry, values: dict):
+    specs = replace(specs, PR=values["PR_inlet"])
+    geometry = replace(geometry, r_lip=values["r_lip"])
+    return specs, geometry
+#------------------------#
 
 
 #---- Fan (and the bypass ratio its exit splits at) ----#

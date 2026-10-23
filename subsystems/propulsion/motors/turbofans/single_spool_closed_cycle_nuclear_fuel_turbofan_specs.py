@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from subsystems.propulsion.motors.components.inlets.subsonic_inlet_specs import SubsonicInletSpecs
+from subsystems.propulsion.motors.components.inlets.subsonic_inlet_geometry import SubsonicInletGeometry
 from subsystems.propulsion.motors.components.compressors.fan_specs import FanSpecs
 from subsystems.propulsion.motors.components.compressors.axial_compressor_specs import AxialCompressorSpecs
 from subsystems.propulsion.motors.components.compressors.axial_compressor_geometry import AxialCompressorGeometry
@@ -11,12 +12,13 @@ from subsystems.propulsion.motors.components.ducting.duct_specs import DuctSpecs
 
 
 @dataclass
-class SingleSpoolClosedCycleNuclearTurbofanSpecifications:
+class SingleSpoolClosedCycleNuclearTurbofanSpecs:
     """
     No defaults: values come from a vehicle specification (e.g. specifications/SKYF/engine.py).
     """
     bypass_ratio: float                     # [-]
     subsonic_inlet: SubsonicInletSpecs
+    subsonic_inlet_geometry: SubsonicInletGeometry
     fan: FanSpecs
     compressor: AxialCompressorSpecs
     compressor_geometry: AxialCompressorGeometry

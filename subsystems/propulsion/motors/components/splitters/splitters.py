@@ -9,7 +9,6 @@ class CoreSplitter(Component):
         self.beta = bypass_ratio
 
     def process(self, flow: FlowState) -> FlowState:
-        self.last_inlet = flow
         Tt_in = flow.Tt
         Pt_in = flow.Pt
         rho_in = flow.rho
@@ -38,7 +37,6 @@ class BypassSplitter(Component):
         self.beta = bypass_ratio
 
     def process(self, flow: FlowState) -> FlowState:
-        self.last_inlet = flow
         Tt_in = flow.Tt
         Pt_in = flow.Pt
         rho_in = flow.rho

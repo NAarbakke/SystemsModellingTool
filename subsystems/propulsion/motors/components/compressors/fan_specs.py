@@ -10,3 +10,4 @@ class FanSpecs:
     eta_poly: float     # [-] polytropic efficiency
     r_tip: float        # [m] tip radius
     r_hub: float        # [m] hub radius
+    M_face: float       # [-] design point face Mach nr - sets how much air the engine swallows

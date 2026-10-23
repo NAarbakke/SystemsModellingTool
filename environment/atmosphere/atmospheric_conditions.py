@@ -6,12 +6,13 @@ from subsystems.propulsion.motors.helpers.gas_model import GasModel
 class AtmosphericConditions:
     """
     Static state of the air the vehicle flies in (engine station 0).
-    No defaults: values come from a vehicle specification (e.g. specifications/SKYF/initial_conditions/atmosphere.py).
+    No defaults: values come from a vehicle specification (e.g. the FlightCondition in specifications/SKYF/flight_state/cruise.py).
     """
-    T_0: float          # [K]  static temperature
-    P_0: float          # [Pa] static pressure
+    T: float          # [K]  static temperature
+    P: float          # [Pa] static pressure
+    rho: float 
 
-    def a_0(self, gas: GasModel) -> float:
+    def a(self, gas: GasModel) -> float:
         """Local speed of sound [m/s]."""
-        a_0 = (gas.gamma(self.T_0) * gas.R * self.T_0) ** 0.5
-        return a_0
+        a = (gas.gamma(self.T) * gas.R * self.T) ** 0.5
+        return a

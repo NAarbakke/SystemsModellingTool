@@ -85,6 +85,7 @@ Conventions: @documentation/codebase/conventions.md
 - The API sends ready-to-draw geometry (bands, upper half only) from `interface/api/serialise.py`; geometry decisions stay in Python, the frontend only paints.
 - An engine joins the dashboards through `interface/gui/<engine>_view.py`: an `EngineView` (title, stations, streams, inputs, `evaluate()`), framework-neutral. Inputs per component are in `interface/gui/component_inputs.py`.
 - Every front end (CLI `interface/cli/run.py`, TUI, dashboard, reports) runs engines only through `ENGINES` (`interface/gui/engines.py`) -> `view.evaluate(values)`; printed tables come from `interface/tables.py`. No per-engine entry scripts.
+- Stations: SAE ARP755 numbering (0 freestream, 1 inlet lip, 2 engine face, 25 compressor face behind a fan, 3, 4, 5, 9 nozzle exit; bypass 13, 17, 19), one table in `subsystems/propulsion/motors/helpers/stations.py`. Engines, views and layouts all use it.
 - Engine layout geometry (no drawing) is in `graphics/`; shared engine-view types, plot panels and tiles in `interface/gui/dashboard_view.py`. No plotting libraries: the dashboard and the PDF reports are the only places things are drawn.
 
 # Reports

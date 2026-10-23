@@ -23,12 +23,17 @@ class InternationalStandardAtmosphere:
         return self._stratosphere(h)
 
     def _troposphere(self, h: float) -> AtmosphericConditions:
-        T_0 = self.T_sl - self.lapse_rate * h
-        P_0 = self.P_sl * (T_0 / self.T_sl) ** (self.g_0 / (self.lapse_rate * self.R))
-        return AtmosphericConditions(T_0=T_0, P_0=P_0)
+        T = self.T_sl - self.lapse_rate * h
+        P = self.P_sl * (T / self.T_sl) ** (self.g_0 / (self.lapse_rate * self.R))
+        return self._state(T, P)
 
     def _stratosphere(self, h: float) -> AtmosphericConditions:
         tropopause = self._troposphere(self.h_tropopause)
-        T_0 = tropopause.T_0
-        P_0 = tropopause.P_0 * math.exp(-self.g_0 * (h - self.h_tropopause) / (self.R * T_0))
-        return AtmosphericConditions(T_0=T_0, P_0=P_0)
+        T = tropopause.T
+        P = tropopause.P * math.exp(-self.g_0 * (h - self.h_tropopause) / (self.R * T))
+        return self._state(T, P)
+
+    def _state(self, T: float, P: float) -> AtmosphericConditions:
+        """Static state with density from the ideal gas law."""
+        rho = P / (self.R * T)
+        return AtmosphericConditions(T=T, P=P, rho=rho)

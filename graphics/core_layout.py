@@ -28,11 +28,14 @@ SHAFT_TO_CASING = 0.12      # [-] shaft radius / casing radius
 
 @dataclass
 class CoreLayout:
-    """Axial positions [m] of the core stations, wall breakpoints from compressor face to nozzle exit, and what sits inside."""
+    """
+    Axial positions [m] of the core stations (SAE ARP755 numbers, see helpers/stations.py), wall breakpoints from
+    compressor face to nozzle exit, and what sits inside.
+    """
     x_3: float      # compressor exit
-    x_4: float      # heat section (reactor / combustor) exit
+    x_4: float      # turbine entry (heat section exit)
     x_5: float      # turbine exit
-    x_6: float      # nozzle exit
+    x_9: float      # nozzle exit
     x_inner: list[float]
     r_inner: list[float]
     x_outer: list[float]
@@ -88,17 +91,17 @@ def _core(x_3: float, x_c: list[float], r_hub_c: list[float], r_tip_c: list[floa
 
     x_4 = x_3 + L_heat
     x_5 = x_4 + TURBINE_LENGTH
-    x_6 = x_5 + NOZZLE_LENGTH
+    x_9 = x_5 + NOZZLE_LENGTH
 
     # Turbine: one nominal stage
     stators.append((x_4 + 0.10 * TURBINE_LENGTH, x_4 + 0.40 * TURBINE_LENGTH))
     rotors.append((x_4 + 0.55 * TURBINE_LENGTH, x_4 + 0.85 * TURBINE_LENGTH))
 
     return CoreLayout(
-        x_3=x_3, x_4=x_4, x_5=x_5, x_6=x_6,
-        x_inner=[*x_c, x_3, x_3 + TRANSITION_LENGTH, x_4 - TRANSITION_LENGTH, x_4, x_5, x_5 + 0.6 * NOZZLE_LENGTH, x_6],
+        x_3=x_3, x_4=x_4, x_5=x_5, x_9=x_9,
+        x_inner=[*x_c, x_3, x_3 + TRANSITION_LENGTH, x_4 - TRANSITION_LENGTH, x_4, x_5, x_5 + 0.6 * NOZZLE_LENGTH, x_9],
         r_inner=[*r_hub_c, r_hub_c[-1], r_shaft, r_shaft, r_hub_c[-1], r_hub_c[-1], 0.0, 0.0],
-        x_outer=[*x_c, x_3, x_3 + TRANSITION_LENGTH, x_5, x_6],
+        x_outer=[*x_c, x_3, x_3 + TRANSITION_LENGTH, x_5, x_9],
         r_outer=[*r_tip_c, r_tip_c[-1], r_case, r_case, r_exit],
         rotors=rotors,
         stators=stators,

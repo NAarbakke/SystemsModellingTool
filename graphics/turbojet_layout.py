@@ -7,27 +7,27 @@ import numpy as np
 from graphics.core_layout import COMBUSTOR_LENGTH, core_layout
 from graphics.engine_illustration import BODY, CASING, CASING_THICKNESS, FREESTREAM_LENGTH, EngineLayout, gas_path
 from subsystems.propulsion.motors.components.compressors.axial_compressor_sizing import AxialCompressorSizing
-from subsystems.propulsion.motors.turbojets.single_spool_open_cycle_liquid_fuel_turbojet_specs import SingleSpoolOpenCycleLiquidFuelTurbojetSpecifications
-from subsystems.propulsion.motors.turbojets.single_spool_open_cycle_nuclear_turbojet_specs import SingleSpoolOpenCycleNuclearTurbojetSpecifications
+from subsystems.propulsion.motors.turbojets.single_spool_open_cycle_liquid_fuel_turbojet_specs import SingleSpoolOpenCycleLiquidFuelTurbojetSpecs
+from subsystems.propulsion.motors.turbojets.single_spool_open_cycle_nuclear_turbojet_specs import SingleSpoolOpenCycleNuclearTurbojetSpecs
 
 INLET_LENGTH = 0.35     # [m] nominal
 
 
-def turbojet_layout(specs: SingleSpoolOpenCycleNuclearTurbojetSpecifications | SingleSpoolOpenCycleLiquidFuelTurbojetSpecifications,
+def turbojet_layout(specs: SingleSpoolOpenCycleNuclearTurbojetSpecs | SingleSpoolOpenCycleLiquidFuelTurbojetSpecs,
                     sizing: AxialCompressorSizing) -> EngineLayout:
-    nuclear = isinstance(specs, SingleSpoolOpenCycleNuclearTurbojetSpecifications)
-    x_1 = INLET_LENGTH
+    nuclear = isinstance(specs, SingleSpoolOpenCycleNuclearTurbojetSpecs)
+    x_2 = INLET_LENGTH      # compressor face; the lip (station 1) is at x = 0
     L_heat = specs.reactor.fuel_rod_length if nuclear else COMBUSTOR_LENGTH
-    core = core_layout(specs.compressor_geometry, sizing, L_heat, specs.nozzle, x_face=x_1)
+    core = core_layout(specs.compressor_geometry, sizing, L_heat, specs.nozzle, x_face=x_2)
 
     # Spinner grows from the lip to the compressor hub; the casing runs straight into the compressor
     path = gas_path(
-        ["0", "1", "3", "4", "5", "6"],
+        ["0", "1", "2", "3", "4", "5", "9"],
         [0.0, *core.x_inner], [0.0, *core.r_inner],
         [0.0, *core.x_outer], [core.r_outer[0], *core.r_outer])
 
     return EngineLayout(
-        station_x={"0": -FREESTREAM_LENGTH, "1": x_1, "3": core.x_3, "4": core.x_4, "5": core.x_5, "6": core.x_6},
+        station_x={"0": -FREESTREAM_LENGTH, "1": 0.0, "2": x_2, "3": core.x_3, "4": core.x_4, "5": core.x_5, "9": core.x_9},
         gas_paths=[path],
         solids=[
             (path.x, np.zeros_like(path.x), path.r_inner, BODY),
@@ -37,8 +37,8 @@ def turbojet_layout(specs: SingleSpoolOpenCycleNuclearTurbojetSpecifications | S
         rods=(*core.heat, path) if nuclear else None,
         liner=None if nuclear else (*core.heat, path),
         labels=[
-            ("Inlet", 0.5 * x_1, None),
-            ("Compressor", 0.5 * (x_1 + core.x_3), None),
+            ("Inlet", 0.5 * x_2, None),
+            ("Compressor", 0.5 * (x_2 + core.x_3), None),
             ("Reactor" if nuclear else "Combustor", 0.5 * (core.x_3 + core.x_4), None),
             ("Turbine", 0.5 * (core.x_4 + core.x_5), None),
-            ("Nozzle", 0.5 * (core.x_5 + core.x_6), None)])
+            ("Nozzle", 0.5 * (core.x_5 + core.x_9), None)])

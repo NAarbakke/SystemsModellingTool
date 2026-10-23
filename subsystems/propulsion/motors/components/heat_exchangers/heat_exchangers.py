@@ -385,7 +385,7 @@ class HeatExchangerComponent(Component):
     """
 
     def __init__(self, specs: HeatExchangerSpecs, gas_model: GasModel = None, name: str = "heat_exchanger"):
-        super().__init__(gas_model, name)
+        super().__init__(gas_model, name, specs=specs)
 
         self.T_cold_out = specs.T_cold_out
 
@@ -407,7 +407,6 @@ class HeatExchangerComponent(Component):
         self.last_hx_result: HXResult | None = None
 
     def process(self, flow: FlowState) -> FlowState:
-        self.last_inlet = flow
 
         hx = HeatExchanger(
             cold_fluid="air",
@@ -439,5 +438,4 @@ class HeatExchangerComponent(Component):
             Pt=Pt_out,
             m_dot=flow.m_dot)
 
-        self.last_exit = out
         return out

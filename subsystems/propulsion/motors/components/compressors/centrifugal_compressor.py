@@ -6,12 +6,11 @@ from subsystems.propulsion.motors.components.compressors.centrifugal_compressor_
 
 class CentrifugalCompressor(Component):
     def __init__(self, specs: CentrifugalCompressorSpecs, gas_model: GasModel, name: str = ""):
-        super().__init__(gas_model, name)
+        super().__init__(gas_model, name, specs=specs)
         self.PR = specs.PR
         self.eta_poly = specs.eta_poly
 
     def process(self, flow: FlowState) -> FlowState:
-        self.last_inlet = flow
         Tt_in = flow.Tt
         Pt_in = flow.Pt
         m_dot = flow.m_dot
@@ -32,7 +31,6 @@ class CentrifugalCompressor(Component):
             Pt=Pt_out,
             m_dot=m_dot)
 
-        self.last_exit = out
         return out
 
 

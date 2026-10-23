@@ -14,7 +14,7 @@ class Combustor(Component):
     """
 
     def __init__(self, specs: CombustorSpecs, gas_model: GasModel, name: str = "combustor"):
-        super().__init__(gas_model, name)
+        super().__init__(gas_model, name, specs)
         self.PR_loss = specs.PR_loss
         self.eta_comb = specs.eta
         self.LHV = specs.LHV
@@ -23,7 +23,6 @@ class Combustor(Component):
         self.last_fuel_flow: float = 0.0
 
     def process(self, flow: FlowState) -> FlowState:
-        self.last_inlet = flow
         Tt_in = flow.Tt
         Pt_in = flow.Pt
         cp_in = self.gas.cp(Tt_in)
@@ -44,5 +43,4 @@ class Combustor(Component):
             Pt=Pt_out,
             m_dot=m_dot_out)
 
-        self.last_exit = out
         return out

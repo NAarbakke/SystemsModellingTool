@@ -29,8 +29,8 @@ class AxialCompressorGeometry:
         return self.r_hub / self.r_tip    # 0.4 - 0.6 at front stage ish
 
     @property
-    def A_inlet(self) -> float:
-        """Inlet annulus area [m^2]"""
+    def A_face(self) -> float:
+        """Face/inlet annulus area [m^2]"""
         return np.pi * self.r_tip**2 * (1 - self.hub_to_tip**2)
 
     @property

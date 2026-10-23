@@ -17,11 +17,9 @@ class Turbine2(Component):
         self.stages = stages
 
     def process(self, flow: FlowState) -> FlowState:
-        self.last_inlet = flow
         current = flow
         for stage in self.stages:
             current = stage.process(current)
-        self.last_exit = current
         return current
 
     #@property
@@ -42,14 +40,13 @@ class Turbine2(Component):
 
 class AxialTurbine(Component):
     def __init__(self, specs: AxialTurbineSpecs, gas_model: GasModel, fan: "Fan" = None, compressor: "Compressor" = None, name: str = ""):
-        super().__init__(gas_model, name)
+        super().__init__(gas_model, name, specs=specs)
         self.eta_poly = specs.eta_poly
         self.eta_mech = specs.eta_mech
         self.fan = fan
         self.compressor = compressor
 
     def process(self, flow: FlowState) -> FlowState:
-        self.last_inlet = flow
         Tt_in = flow.Tt
         Pt_in = flow.Pt
         m_dot = flow.m_dot
@@ -69,5 +66,4 @@ class AxialTurbine(Component):
             Pt=Pt_out,
             m_dot=m_dot)
 
-        self.last_exit = out
         return out

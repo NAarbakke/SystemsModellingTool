@@ -10,12 +10,11 @@ class TurbineStage(Component):
     """
 
     def __init__(self, eta_poly: float, gas_model: GasModel, name: str = "turbine stage"):
-        super().__init__(gas_model, name)  # last_inlet, last_exit too?
+        super().__init__(gas_model, name)
         #self.PR_stage = PR_stage  # Pt_out / Pt_in
         self.eta_poly = eta_poly
 
     def process(self, flow: FlowState) -> FlowState:
-        self.last_inlet = flow
         Tt_in = flow.Tt
         Pt_in = flow.Pt
         cp = flow.cp
@@ -39,7 +38,6 @@ class TurbineStage(Component):
             gamma=gamma_out,
             R=self.gas.R)
 
-        self.last_exit = out
         return out
 
 
@@ -50,12 +48,11 @@ class CompressorStage(Component):
     """
 
     def __init__(self, PR_comp_stage: float, eta_poly_stage: float, gas_model: GasModel, name: str = "compressor stage"):
-        super().__init__(gas_model, name)  # last_inlet, last_exit too?
+        super().__init__(gas_model, name)
         self.PR_comp_stage = PR_comp_stage  # Pt_out / Pt_in
         self.eta_poly_stage = eta_poly_stage
 
     def process(self, flow: FlowState) -> FlowState:
-        self.last_inlet = flow
         Tt_in = flow.Tt
         Pt_in = flow.Pt
         cp = flow.cp
@@ -80,5 +77,4 @@ class CompressorStage(Component):
             gamma=gamma_out,
             R=self.gas.R)
 
-        self.last_exit = out
         return out

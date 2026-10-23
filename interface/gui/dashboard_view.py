@@ -8,11 +8,9 @@ from typing import Any, Callable
 import numpy as np
 
 from graphics.engine_illustration import EngineLayout
-from specifications.SKYF.flight_state.cruise import h_cruise, V_cruise
-from specifications.SKYF.initial_conditions.atmosphere import isa
 from subsystems.propulsion.motors.components.compressors.axial_compressor_geometry import AxialCompressorGeometry
 from subsystems.propulsion.motors.components.compressors.axial_compressor_sizing import AxialCompressorSizing
-from subsystems.propulsion.motors.helpers.gas_model import GasModel
+from systems.shared.flight_condition import FlightCondition
 
 # Station plots: FlowState quantities against station, one panel per quantity. Total and static values of the
 # same quantity share a panel.
@@ -27,7 +25,7 @@ PANELS = {
 
 # run_point() scalar -> (label, display unit, SI -> display scale); unknown keys are shown raw
 KPIS = {
-    "F_total": ("Net thrust", "kN", 1e-3),
+    "Thrust": ("Net thrust", "kN", 1e-3),
     "F_core": ("Core thrust", "kN", 1e-3),
     "F_bypass": ("Bypass thrust", "kN", 1e-3),
     "Power": ("Thrust power", "MW", 1e-6),
@@ -99,15 +97,9 @@ class EngineView:
         return out
 
 
-def freestream(gas: GasModel) -> dict[str, float]:
-    """Fixed SKYF cruise flight state (altitude, airspeed) -> run_point() freestream (T_0, P_0, M_0), through the ISA."""
-    atmosphere = isa.conditions(h_cruise)
-    return {"T_0": atmosphere.T_0, "P_0": atmosphere.P_0, "M_0": V_cruise / atmosphere.a_0(gas)}
-
-
-def flight_subtitle(flow: dict[str, float]) -> str:
-    return (f"h₀ {h_cruise:g} m · V₀ {V_cruise:g} m/s · "
-            f"T₀ {flow['T_0']:.4g} K · P₀ {flow['P_0'] * 1e-3:.4g} kPa · M₀ {flow['M_0']:.3g}")
+def flight_subtitle(flight: FlightCondition) -> str:
+    return (f"h₀ {flight.h:g} m · V₀ {flight.V:g} m/s · "
+            f"T₀ {flight.atmosphere.T:.4g} K · P₀ {flight.atmosphere.P * 1e-3:.4g} kPa · M₀ {flight.M:.3g}")
 #-------------------------------------------------------#
 
 
@@ -130,7 +122,7 @@ def performance_tiles(result: dict) -> list[Tile]:
         if isinstance(value, (bool, np.bool_)):
             tiles.append(Tile(label, "Within" if value else "Exceeded", status="good" if value else "critical"))
         else:
-            tiles.append(Tile(label, f"{value * scale:,.4g}", unit, hero=key == "F_total"))
+            tiles.append(Tile(label, f"{value * scale:,.4g}", unit, hero=key == "Thrust"))
     return tiles
 
 

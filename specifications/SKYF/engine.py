@@ -1,4 +1,5 @@
 from subsystems.propulsion.motors.components.inlets.subsonic_inlet_specs import SubsonicInletSpecs
+from subsystems.propulsion.motors.components.inlets.subsonic_inlet_geometry import SubsonicInletGeometry
 from subsystems.propulsion.motors.components.compressors.fan_specs import FanSpecs
 from subsystems.propulsion.motors.components.compressors.centrifugal_compressor_specs import CentrifugalCompressorSpecs
 from subsystems.propulsion.motors.components.compressors.axial_compressor_specs import AxialCompressorSpecs
@@ -10,22 +11,29 @@ from subsystems.propulsion.motors.components.reactors.fast_neutron_reactor_specs
 from subsystems.propulsion.motors.components.turbines.axial_turbine_specs import AxialTurbineSpecs
 from subsystems.propulsion.motors.components.nozzles.convergent_nozzle_specs import ConvergentNozzleSpecs
 from subsystems.propulsion.motors.components.ducting.duct_specs import DuctSpecs
-from subsystems.propulsion.motors.turbofans.single_spool_open_cycle_liquid_fuel_turbofan_specs import SingleSpoolOpenCycleLiquidFuelTurbofanSpecifications
-from subsystems.propulsion.motors.turbofans.single_spool_closed_cycle_nuclear_fuel_turbofan_specs import SingleSpoolClosedCycleNuclearTurbofanSpecifications
-from subsystems.propulsion.motors.turbofans.single_spool_open_cycle_nuclear_fuel_turbofan_specs import SingleSpoolOpenCycleNuclearTurbofanSpecifications
-from subsystems.propulsion.motors.turbojets.single_spool_open_cycle_nuclear_turbojet_specs import SingleSpoolOpenCycleNuclearTurbojetSpecifications
-from subsystems.propulsion.motors.turbojets.single_spool_open_cycle_liquid_fuel_turbojet_specs import SingleSpoolOpenCycleLiquidFuelTurbojetSpecifications
+from subsystems.propulsion.motors.turbofans.single_spool_open_cycle_liquid_fuel_turbofan_specs import SingleSpoolOpenCycleLiquidFuelTurbofanSpecs
+from subsystems.propulsion.motors.turbofans.single_spool_closed_cycle_nuclear_fuel_turbofan_specs import SingleSpoolClosedCycleNuclearTurbofanSpecs
+from subsystems.propulsion.motors.turbofans.single_spool_open_cycle_nuclear_fuel_turbofan_specs import SingleSpoolOpenCycleNuclearTurbofanSpecs
+from subsystems.propulsion.motors.turbojets.single_spool_open_cycle_nuclear_turbojet_specs import SingleSpoolOpenCycleNuclearTurbojetSpecs
+from subsystems.propulsion.motors.turbojets.single_spool_open_cycle_liquid_fuel_turbojet_specs import SingleSpoolOpenCycleLiquidFuelTurbojetSpecs
 
 
 #---- Components ----#
 subsonic_inlet = SubsonicInletSpecs(
-    PR=0.9)
+    PR=0.97)            # subsonic pitot inlet: 0.95 - 0.98
+
+turbofan_inlet_geometry = SubsonicInletGeometry(
+    r_lip=0.50)         # [m] placeholder: fan tip radius
+
+turbojet_inlet_geometry = SubsonicInletGeometry(
+    r_lip=0.30)         # [m] placeholder: compressor face tip radius
 
 fan = FanSpecs(
     PR=1.2,
     eta_poly=0.88,
     r_tip=0.5,          # [m]
-    r_hub=0.1)          # [m]
+    r_hub=0.1,          # [m]
+    M_face=0.6)         # typical fan face Mach 0.55 - 0.65
 
 centrifugal_compressor = CentrifugalCompressorSpecs(
     PR=2.0,
@@ -35,7 +43,9 @@ axial_compressor = AxialCompressorSpecs(
     PR=2.0,
     eta_poly=0.90,
     psi=0.35,
-    U_tip=350.0)        # [m/s]
+    U_tip=350.0,        # [m/s]
+    phi=0.63,           # gives face Mach ~0.5 with U_tip and the radii below
+    M_face=None)        # set this instead of phi to fix the face Mach directly
 
 axial_compressor_geometry = AxialCompressorGeometry(   # placeholder values
     annulus_type=AnnulusType.CONSTANT_TIP,  #minimises compressor length
@@ -96,9 +106,10 @@ bypass_nozzle = ConvergentNozzleSpecs(
 
 
 #---- Engines ----#
-specs = SingleSpoolOpenCycleLiquidFuelTurbofanSpecifications(
+specs = SingleSpoolOpenCycleLiquidFuelTurbofanSpecs(
     bypass_ratio=2.0,
     subsonic_inlet=subsonic_inlet,
+    subsonic_inlet_geometry=turbofan_inlet_geometry,
     fan=fan,
     compressor=axial_compressor,
     compressor_geometry=axial_compressor_geometry,
@@ -108,9 +119,10 @@ specs = SingleSpoolOpenCycleLiquidFuelTurbofanSpecifications(
     bypass_duct=bypass_duct,
     bypass_nozzle=bypass_nozzle)
 
-specs_closed_cycle_nuclear = SingleSpoolClosedCycleNuclearTurbofanSpecifications(
+specs_closed_cycle_nuclear = SingleSpoolClosedCycleNuclearTurbofanSpecs(
     bypass_ratio=2.0,
     subsonic_inlet=subsonic_inlet,
+    subsonic_inlet_geometry=turbofan_inlet_geometry,
     fan=fan,
     compressor=axial_compressor,
     compressor_geometry=axial_compressor_geometry,
@@ -121,9 +133,10 @@ specs_closed_cycle_nuclear = SingleSpoolClosedCycleNuclearTurbofanSpecifications
     bypass_duct=bypass_duct,
     bypass_nozzle=bypass_nozzle)
 
-specs_open_cycle_nuclear = SingleSpoolOpenCycleNuclearTurbofanSpecifications(
+specs_open_cycle_nuclear = SingleSpoolOpenCycleNuclearTurbofanSpecs(
     bypass_ratio=2.0,
     subsonic_inlet=subsonic_inlet,
+    subsonic_inlet_geometry=turbofan_inlet_geometry,
     fan=fan,
     compressor=axial_compressor,
     compressor_geometry=axial_compressor_geometry,
@@ -133,16 +146,18 @@ specs_open_cycle_nuclear = SingleSpoolOpenCycleNuclearTurbofanSpecifications(
     bypass_duct=bypass_duct,
     bypass_nozzle=bypass_nozzle)
 
-specs_open_cycle_nuclear_turbojet = SingleSpoolOpenCycleNuclearTurbojetSpecifications(
+specs_open_cycle_nuclear_turbojet = SingleSpoolOpenCycleNuclearTurbojetSpecs(
     subsonic_inlet=subsonic_inlet,
+    subsonic_inlet_geometry=turbojet_inlet_geometry,
     compressor=axial_compressor,
     compressor_geometry=axial_compressor_geometry,
     reactor=reactor,
     turbine=turbine,
     nozzle=core_nozzle)
 
-specs_open_cycle_liquid_fuel_turbojet = SingleSpoolOpenCycleLiquidFuelTurbojetSpecifications(
+specs_open_cycle_liquid_fuel_turbojet = SingleSpoolOpenCycleLiquidFuelTurbojetSpecs(
     subsonic_inlet=subsonic_inlet,
+    subsonic_inlet_geometry=turbojet_inlet_geometry,
     compressor=axial_compressor,
     compressor_geometry=axial_compressor_geometry,
     combustor=combustor,

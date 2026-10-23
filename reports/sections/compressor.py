@@ -19,7 +19,7 @@ class Compressor(Section):
         comp = self.case.point["compressor"]
         stages = comp["stages"]
         prose = Raw(
-            rf"The compressor is sized from the design-point flow at stations 1 and 3 to {len(stages)} "
+            rf"The compressor is sized from the design-point flow at its face and exit to {len(stages)} "
             rf"stage{'s' if len(stages) != 1 else ''} with an overall length of \SI{{{comp['length']:.3g}}}{{\metre}} "
             r"(\autoref{tab:compressor-stages}, \autoref{fig:compressor-annulus}).")
         rows = [[str(s["n"]), num(s["length"], 3), num(s["r_hub"], 3), num(s["r_tip"], 3), num(s["r_hub"] / s["r_tip"], 3)]

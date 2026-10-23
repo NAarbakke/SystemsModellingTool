@@ -19,4 +19,3 @@ class FlowState:
     rho: float | None = None            # static density [kg/m^3]
     rho_t: float | None = None          # total density [kg/m^3]
     m_dot: float | None = None          # mass flow rate [kg/s]
-#remove m_dot?? cause not a flow state property really

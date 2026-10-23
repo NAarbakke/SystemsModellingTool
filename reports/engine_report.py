@@ -1,7 +1,7 @@
 """
 The engine performance report: design point, flow state, compressor and off-design sweeps, assembled from sections.
 """
-from interface.gui.dashboard_view import KPIS, freestream
+from interface.gui.dashboard_view import KPIS
 from reports.latex import escape, in_sentence, num, split_unit
 from reports.report import Case, Report
 from reports.sections.compressor import Compressor
@@ -11,8 +11,7 @@ from reports.sections.nomenclature import Nomenclature
 from reports.sections.off_design import OffDesign
 from reports.sections.station_results import StationResults
 from reports.sweep import run_sweep
-from specifications.SKYF.flight_state.cruise import h_cruise, V_cruise
-from subsystems.propulsion.motors.helpers.gas_model import GasModel
+from specifications.SKYF.flight_state.cruise import cruise
 
 AUTHOR = "Systems Modelling Tool"
 
@@ -24,11 +23,10 @@ def _kpi(case: Case, key: str) -> str:
 
 def _abstract(case: Case, sweep_keys: list[str]) -> str:
     v = case.values
-    flow = freestream(GasModel())
     text = (rf"This report documents the design-point performance of the {escape(case.view.title.lower())} at "
-            rf"an altitude of {num(h_cruise, 4)}~m and a true airspeed of {num(V_cruise, 3)}~m/s: a flight Mach number of "
-            rf"{num(flow['M_0'], 3)}, static temperature {num(flow['T_0'], 4)}~K and static pressure {num(flow['P_0'] * 1e-3, 4)}~kPa "
-            rf"(International Standard Atmosphere). The engine delivers a net thrust of {_kpi(case, 'F_total')}")
+            rf"an altitude of {num(cruise.h, 4)}~m and a true airspeed of {num(cruise.V, 3)}~m/s: a flight Mach number of "
+            rf"{num(cruise.M, 3)}, static temperature {num(cruise.atmosphere.T, 4)}~K and static pressure {num(cruise.atmosphere.P * 1e-3, 4)}~kPa "
+            rf"(International Standard Atmosphere). The engine delivers a net thrust of {_kpi(case, 'Thrust')}")
     text += rf" at a TSFC of {_kpi(case, 'TSFC')}." if "TSFC" in case.snap.result else "."
     text += (" The flow state at every station"
              + (", the sizing of the axial compressor" if case.snap.sizing else "")
