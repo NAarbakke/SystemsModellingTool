@@ -9,14 +9,40 @@ import { useWidth } from "@/lib/useWidth"
 const M = { left: 64, right: 20 }      // [px] plot margins
 const TAG_ROW = 30                      // [px] station tags above the engine
 const PANEL_H = 128                     // [px] one station plot
-const PANEL_GAP = 14
+const PANEL_GAP = 36
+const TITLE_ROW = 30                    // [px] panel title + legend above each plot, kept clear of vertical lines
 const AXIS_H = 44                       // [px] station names under the plots
 const DASHES = ["", "5 4"]              // per stream
 
-const ROTOR = "rgb(237 237 237 / 0.55)"
-const STATOR = "rgb(237 237 237 / 0.18)"
-const SOLID = { body: { fill: "#111111", stroke: "#262626" }, casing: { fill: "#2a2a2a", stroke: "#3a3a3a" } }
-const SERIES = { total: "var(--fg)", static: "var(--heat)", none: "var(--fg)" }
+// Drawing colours are theme tokens (index.css)
+const ROTOR = "var(--rotor)"
+const STATOR = "var(--stator)"
+const SOLID = { body: { fill: "var(--body)", stroke: "var(--body-line)" }, casing: { fill: "var(--casing)", stroke: "var(--casing-line)" } }
+const SERIES = { total: "var(--fg)", static: "var(--heat)", none: "var(--fg-2)" }
+const LEGEND_CHAR = 6.4                 // [px] width of one 10.5 px mono character
+const LEGEND_SWATCH = 18                // [px] line sample + gap before its label
+const LEGEND_GAP = 18                   // [px] between legend entries
+
+interface LegendEntry { label: string; stroke: string; dash: string }
+
+/* Panel legend, right-aligned to x = right */
+function Legend({ entries, right, y }: { entries: LegendEntry[]; right: number; y: number }) {
+  const widths = entries.map((e) => e.label.length * LEGEND_CHAR + LEGEND_SWATCH)
+  const placed = entries.map((e, i) => ({
+    ...e,
+    at: right - widths.slice(i).reduce((a, b) => a + b, 0) - (entries.length - 1 - i) * LEGEND_GAP,
+  }))
+  return (
+    <g>
+      {placed.map((e) => (
+        <g key={e.label} transform={`translate(${e.at}, ${y})`}>
+          <line x1={0} x2={12} y1={-3.5} y2={-3.5} stroke={e.stroke} strokeWidth={1.5} strokeDasharray={e.dash} />
+          <text x={LEGEND_SWATCH} className="font-mono text-[10.5px]" fill="var(--fg-2)">{e.label}</text>
+        </g>
+      ))}
+    </g>
+  )
+}
 
 interface Props {
   layout: EngineLayout
@@ -38,8 +64,15 @@ export function FlowChart({ layout, stations, streams, panels, hovered, onHover 
   const engineH = 2 * (layout.r_max + layout.label_room) * ppm
   const cy = TAG_ROW + engineH / 2
   const sy = (r: number) => cy - r * ppm
-  const panelsTop = TAG_ROW + engineH + 18
+  const panelsTop = TAG_ROW + engineH + 24
   const height = panelsTop + panels.length * (PANEL_H + PANEL_GAP) + AXIS_H
+  const panelTop = (row: number) => panelsTop + row * (PANEL_H + PANEL_GAP)
+
+  // Vertical lines (stations, crosshair) run top to bottom but break over each panel's title row
+  const bottom = height - AXIS_H + 4
+  const breaks = panels.map((_, row) => [panelTop(row) - 10, panelTop(row) + TITLE_ROW - 12])
+  const spans = (y0: number): [number, number][] =>
+    [y0, ...breaks.flat(), bottom].reduce<[number, number][]>((out, y, i, ys) => (i % 2 === 0 ? [...out, [y, ys[i + 1]]] : out), [])
 
   const Tt = stations.map((s) => s.Tt ?? 0)
   const [TtLo, TtHi] = [Math.min(...Tt), Math.max(...Tt)]
@@ -69,7 +102,7 @@ export function FlowChart({ layout, stations, streams, panels, hovered, onHover 
         <svg width={width} height={height} className="block select-none" onPointerMove={(e) => nearest(e.clientX - e.currentTarget.getBoundingClientRect().left)}>
           <defs>
             <pattern id="dots" width="14" height="14" patternUnits="userSpaceOnUse">
-              <circle cx="1" cy="1" r="0.7" fill="#1d1d1d" />
+              <circle cx="1" cy="1" r="0.7" fill="var(--dots)" />
             </pattern>
             {layout.gas_paths.map((p, i) => {
               const xs = p.stops.map((s) => s.x)
@@ -88,7 +121,9 @@ export function FlowChart({ layout, stations, streams, panels, hovered, onHover 
 
           {/* Station lines through everything */}
           {positions.map((x) => (
-            <line key={x} x1={sx(x)} x2={sx(x)} y1={TAG_ROW - 4} y2={height - AXIS_H + 4} stroke="var(--line)" />
+            <g key={x}>
+              {spans(TAG_ROW - 4).map(([y1, y2]) => <line key={y1} x1={sx(x)} x2={sx(x)} y1={y1} y2={y2} stroke="var(--line)" />)}
+            </g>
           ))}
 
           {/* Engine, mirrored about the centreline */}
@@ -96,9 +131,9 @@ export function FlowChart({ layout, stations, streams, panels, hovered, onHover 
             <g key={sign}>
               {layout.gas_paths.map((p, i) => <path key={i} d={bandPath(p, sx, sy, sign)} fill={`url(#gas-${i})`} />)}
               {layout.rods?.r.map((r) => (
-                <line key={r} x1={sx(layout.rods!.x0)} x2={sx(layout.rods!.x1)} y1={sy(sign * r)} y2={sy(sign * r)} stroke="rgb(255 255 255 / 0.22)" />
+                <line key={r} x1={sx(layout.rods!.x0)} x2={sx(layout.rods!.x1)} y1={sy(sign * r)} y2={sy(sign * r)} stroke="var(--rods)" />
               ))}
-              {layout.liner && <path d={bandPath(layout.liner, sx, sy, sign)} fill="none" stroke="rgb(255 255 255 / 0.45)" strokeDasharray="3 2" />}
+              {layout.liner && <path d={bandPath(layout.liner, sx, sy, sign)} fill="none" stroke="var(--liner)" strokeDasharray="3 2" />}
               {layout.stators.map((b, i) => <path key={`s${i}`} d={bandPath(b, sx, sy, sign)} fill={STATOR} />)}
               {layout.rotors.map((b, i) => <path key={`r${i}`} d={bandPath(b, sx, sy, sign)} fill={ROTOR} />)}
               {layout.solids.map((b, i) => (
@@ -145,17 +180,23 @@ export function FlowChart({ layout, stations, streams, panels, hovered, onHover 
 
           {/* Station plots */}
           {panels.map((panel, row) => {
-            const top = panelsTop + row * (PANEL_H + PANEL_GAP)
-            const plotTop = top + 20
+            const top = panelTop(row)
+            const plotTop = top + TITLE_ROW
             const values = panel.series.flatMap((s) => stations.map((st) => st[s.field])).filter((v): v is number => v != null).map((v) => v * panel.scale)
             const [lo, hi] = values.length ? [Math.min(...values), Math.max(...values)] : [0, 1]
             const pad = (hi - lo || Math.abs(hi) || 1) * 0.12
             const ys = linear(lo - pad, hi + pad, top + PANEL_H, plotTop)
+            const streamNames = Object.keys(streams)
+            const legend: LegendEntry[] = [
+              ...panel.series.map((s) => ({ label: s.kind ? `${s.symbol} ${s.kind}` : s.symbol, stroke: SERIES[s.kind ?? "none"], dash: "" })),
+              ...(streamNames.length > 1 ? streamNames.map((n, si) => ({ label: n.toLowerCase(), stroke: "var(--fg-3)", dash: DASHES[si] })) : []),
+            ]
             return (
               <g key={panel.name}>
-                <text x={M.left} y={top + 6} className="font-mono text-[10.5px] tracking-[0.08em] uppercase" fill="var(--fg-3)">
-                  {panel.name} <tspan fill="var(--line-strong)">/</tspan> {panel.unit}
+                <text x={M.left} y={top + 6} className="text-[12px] font-medium" fill="var(--fg)">
+                  {panel.name} <tspan className="font-mono text-[11px]" fill="var(--fg-3)">[{panel.unit}]</tspan>
                 </text>
+                <Legend entries={legend} right={width - M.right} y={top + 6} />
                 {niceTicks(lo - pad, hi + pad, 3).map((t) => (
                   <g key={t}>
                     <line x1={M.left} x2={width - M.right} y1={ys(t)} y2={ys(t)} stroke="var(--line)" />
@@ -191,7 +232,9 @@ export function FlowChart({ layout, stations, streams, panels, hovered, onHover 
 
           {/* Crosshair */}
           {hoveredX != null && (
-            <line x1={sx(hoveredX)} x2={sx(hoveredX)} y1={TAG_ROW - 7} y2={height - AXIS_H + 4} stroke="var(--heat)" strokeOpacity={0.6} pointerEvents="none" />
+            <g pointerEvents="none">
+              {spans(TAG_ROW - 7).map(([y1, y2]) => <line key={y1} x1={sx(hoveredX)} x2={sx(hoveredX)} y1={y1} y2={y2} stroke="var(--heat)" strokeOpacity={0.6} />)}
+            </g>
           )}
         </svg>
       )}

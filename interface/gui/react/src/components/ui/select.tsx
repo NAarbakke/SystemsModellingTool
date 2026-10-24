@@ -13,7 +13,7 @@ function SelectTrigger({ className, children, ...props }: React.ComponentProps<t
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       className={cn(
-        "flex h-8 w-full cursor-pointer items-center justify-between rounded-md border border-line bg-bg px-2.5 text-[13px] text-fg",
+        "flex h-8 w-full cursor-pointer items-center justify-between gap-2 rounded-md border border-line bg-bg px-2.5 text-left text-[13px] text-fg [&>span]:truncate",
         "hover:border-line-strong focus-visible:border-heat focus-visible:outline-none data-[state=open]:border-line-strong",
         className,
       )}
@@ -35,7 +35,7 @@ function SelectContent({ className, children, ...props }: React.ComponentProps<t
         position="popper"
         sideOffset={4}
         className={cn(
-          "z-50 w-[var(--radix-select-trigger-width)] overflow-hidden rounded-md border border-line-strong bg-surface-2 p-1 shadow-2xl shadow-black",
+          "z-50 w-[var(--radix-select-trigger-width)] overflow-hidden rounded-md border border-line-strong bg-surface-2 p-1 shadow-2xl shadow-shadow",
           className,
         )}
         {...props}

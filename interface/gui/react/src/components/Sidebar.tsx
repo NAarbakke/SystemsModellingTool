@@ -18,7 +18,7 @@ export function Sidebar({ engines, engine, values, onEngine, onChange, onReset }
   const nChanged = engine.inputs.flatMap((g) => g.items).filter(changed).length
 
   return (
-    <aside className="flex h-full flex-col border-r border-line bg-surface">
+    <aside className="flex h-full w-[288px] flex-col border-r border-line bg-surface">
       <div className="border-b border-line p-4">
         <div className="eyebrow mb-2.5">Engine</div>
         <Select value={engine.id} onValueChange={onEngine}>

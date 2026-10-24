@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react"
+import { PanelLeftCloseIcon, PanelLeftOpenIcon } from "lucide-react"
 
+import { AppearanceMenu } from "@/components/AppearanceMenu"
 import { CompressorChart } from "@/components/CompressorChart"
 import { FlowChart } from "@/components/FlowChart"
 import { Sidebar } from "@/components/Sidebar"
@@ -8,10 +10,11 @@ import { StationReadout } from "@/components/StationReadout"
 import { Tiles } from "@/components/Tiles"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { defaults, downloadReport, evaluate, fetchEngines, type EngineDef, type Snapshot, type Value } from "@/lib/api"
+import { applyAppearance, loadAppearance, type Appearance } from "@/lib/appearance"
 import { fmt } from "@/lib/format"
-import { HEAT_GRADIENT } from "@/lib/heat"
+import { heatGradient } from "@/lib/heat"
 
-const DEFAULT_PANELS = ["Temperature", "Pressure", "Velocity", "Mass flow"]
+const DEFAULT_PANELS = ["Temperature", "Pressure", "Mass flow"]
 
 const FLOW_NOTE =
   "To scale where the model has geometry (axial compressor annulus and blade rows, fan, reactor length, nozzle exit areas); " +
@@ -27,6 +30,25 @@ export default function App() {
   const [panelNames, setPanelNames] = useState(DEFAULT_PANELS)
   const [hovered, setHovered] = useState("6")
   const [stage, setStage] = useState<number | null>(null)
+  const [appearance, setAppearance] = useState(loadAppearance)
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    try { return localStorage.getItem("sidebar") !== "closed" } catch { return true }
+  })
+
+  const changeAppearance = (a: Appearance) => { applyAppearance(a); setAppearance(a) }
+
+  useEffect(() => {
+    try { localStorage.setItem("sidebar", sidebarOpen ? "open" : "closed") } catch { /* private window */ }
+  }, [sidebarOpen])
+
+  // Ctrl/Cmd+B toggles the sidebar
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "b") { e.preventDefault(); setSidebarOpen((o) => !o) }
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [])
 
   useEffect(() => {
     fetchEngines()
@@ -67,25 +89,38 @@ export default function App() {
   }
 
   return (
-    <div className="grid h-screen grid-cols-[288px_1fr] grid-rows-[minmax(0,1fr)] overflow-hidden">
-      <Sidebar
-        engines={engines} engine={engine} values={current}
-        onEngine={setEngineId}
-        onChange={(key, v) => setValues((all) => ({ ...all, [engineId]: { ...all[engineId], [key]: v } }))}
-        onReset={() => setValues((all) => ({ ...all, [engineId]: defaults(engine) }))}
-      />
+    <div
+      className="grid h-screen grid-rows-[minmax(0,1fr)] overflow-hidden transition-[grid-template-columns] duration-200 ease-out"
+      style={{ gridTemplateColumns: `${sidebarOpen ? 288 : 0}px minmax(0,1fr)` }}
+    >
+      <div className="min-w-0 overflow-hidden" inert={!sidebarOpen}>
+        <Sidebar
+          engines={engines} engine={engine} values={current}
+          onEngine={setEngineId}
+          onChange={(key, v) => setValues((all) => ({ ...all, [engineId]: { ...all[engineId], [key]: v } }))}
+          onReset={() => setValues((all) => ({ ...all, [engineId]: defaults(engine) }))}
+        />
+      </div>
 
       <main className="min-w-0 overflow-y-auto">
         <header className="sticky top-0 z-10 flex h-12 items-center justify-between border-b border-line bg-bg/80 px-8 backdrop-blur">
           <nav className="flex items-center gap-2 text-[13px]">
+            <button
+              onClick={() => setSidebarOpen((o) => !o)}
+              title={`${sidebarOpen ? "Hide" : "Show"} inputs (Ctrl+B)`}
+              className="-ml-3 mr-1 grid size-7 cursor-pointer place-items-center rounded-md text-fg-3 transition-colors hover:bg-surface-2 hover:text-fg"
+            >
+              {sidebarOpen ? <PanelLeftCloseIcon className="size-4" /> : <PanelLeftOpenIcon className="size-4" />}
+            </button>
             <Logo />
             <span className="text-fg-2">SKYF</span><Slash />
             <span className="text-fg-2">Propulsion</span><Slash />
             <span className="text-fg">{engine.label}</span>
           </nav>
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-3">
+            <AppearanceMenu value={appearance} onChange={changeAppearance} />
             <ExportReport engine={engineId} values={current} disabled={!!snap?.error || !!apiError} onError={setApiError} />
-            <div className="tabular flex items-center gap-2 text-[12px] text-fg-3">
+            <div className="tabular ml-2 flex items-center gap-2 text-[12px] text-fg-3">
               <span className={`size-1.5 rounded-full ${apiError ? "bg-bad" : "bg-good shadow-[0_0_8px_var(--good)]"}`} />
               {apiError ? "API unreachable" : `Live · ${latency == null ? "–" : Math.round(latency)} ms`}
             </div>
@@ -159,7 +194,7 @@ function Legend({ TtRange }: { TtRange: [number, number] }) {
       <span className="flex items-center gap-1.5"><span className="h-[2px] w-4 bg-heat" />Static</span>
       <span className="flex items-center gap-2">
         Tₜ {fmt(TtRange[0], 3)}
-        <span className="h-1.5 w-24 rounded-full" style={{ background: HEAT_GRADIENT }} />
+        <span className="h-1.5 w-24 rounded-full" style={{ background: heatGradient() }} />
         {fmt(TtRange[1], 4)} K
       </span>
     </div>

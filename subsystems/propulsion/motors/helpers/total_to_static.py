@@ -1,3 +1,4 @@
+from __future__ import annotations
 from dataclasses import replace
 from typing import TYPE_CHECKING
 from subsystems.propulsion.motors.helpers.flow_state import FlowState

@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import TYPE_CHECKING
 from subsystems.propulsion.motors.helpers.flow_state import FlowState
 import numpy as np

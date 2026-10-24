@@ -59,18 +59,22 @@ def apply_centrifugal_compressor(specs: CentrifugalCompressorSpecs, values: dict
 
 
 #---- Axial compressor ----#
-def axial_compressor_inputs(specs: AxialCompressorSpecs, geometry: AxialCompressorGeometry) -> list[Input]:
+def axial_compressor_inputs(specs: AxialCompressorSpecs, geometry: AxialCompressorGeometry, first_rotor: bool = True) -> list[Input]:
+    """first_rotor: the compressor sets the face velocity (and so phi matters); behind a fan the face follows from continuity."""
+    phi = [Input("phi", "Flow coefficient φ", specs.phi, 0.30, 1.00, 0.01)] if first_rotor and specs.phi is not None else []
     return [
         Input("PR", "Pressure ratio", specs.PR, 1.2, 12.0, 0.1),
         Input("eta_poly", "Polytropic efficiency", specs.eta_poly, 0.80, 0.95, 0.01),
         Input("psi", "Stage loading ψ", specs.psi, 0.20, 0.50, 0.01),
+        *phi,
         Input("U_tip", "Tip speed [m/s]", specs.U_tip, 250.0, 500.0, 10.0),
         Input("annulus_type", "Annulus", geometry.annulus_type.name,
               options={a.name: a.name.replace("_", " ").capitalize() for a in AnnulusType})]
 
 
 def apply_axial_compressor(specs: AxialCompressorSpecs, geometry: AxialCompressorGeometry, values: dict):
-    specs = replace(specs, PR=values["PR"], eta_poly=values["eta_poly"], psi=values["psi"], U_tip=values["U_tip"])
+    specs = replace(specs, PR=values["PR"], eta_poly=values["eta_poly"], psi=values["psi"], U_tip=values["U_tip"],
+                    phi=values.get("phi", specs.phi))
     geometry = replace(geometry, annulus_type=AnnulusType[values["annulus_type"]])
     return specs, geometry
 #--------------------------#

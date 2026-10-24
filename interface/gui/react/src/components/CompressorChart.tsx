@@ -35,7 +35,7 @@ export function CompressorChart({ compressor: c, stage, onStage }: Props) {
         <svg width={width} height={height} className="block select-none" onPointerLeave={() => onStage(null)}>
           <defs>
             <pattern id="dots-c" width="14" height="14" patternUnits="userSpaceOnUse">
-              <circle cx="1" cy="1" r="0.7" fill="#1d1d1d" />
+              <circle cx="1" cy="1" r="0.7" fill="var(--dots)" />
             </pattern>
           </defs>
           <rect x={sx(0)} y={M.top} width={c.length * ppm} height={plotH} fill="url(#dots-c)" />
@@ -61,11 +61,11 @@ export function CompressorChart({ compressor: c, stage, onStage }: Props) {
           <line x1={sx(c.length)} x2={sx(c.length)} y1={M.top - 44} y2={M.top + plotH} stroke="var(--line)" />
 
           <g pointerEvents="none">
-            <path d={bandPath(c.annulus, sx, sy)} fill="rgb(255 138 61 / 0.07)" />
-            {c.stators.map((b, i) => <path key={`s${i}`} d={bandPath(b, sx, sy)} fill="rgb(237 237 237 / 0.18)" />)}
-            {c.rotors.map((b, i) => <path key={`r${i}`} d={bandPath(b, sx, sy)} fill="rgb(237 237 237 / 0.55)" />)}
-            <path d={bandPath(hub, sx, sy)} fill="#111111" stroke="#262626" strokeWidth={0.75} />
-            <path d={bandPath(casing, sx, sy)} fill="#2a2a2a" stroke="#3a3a3a" strokeWidth={0.75} />
+            <path d={bandPath(c.annulus, sx, sy)} fill="var(--annulus)" />
+            {c.stators.map((b, i) => <path key={`s${i}`} d={bandPath(b, sx, sy)} fill="var(--stator)" />)}
+            {c.rotors.map((b, i) => <path key={`r${i}`} d={bandPath(b, sx, sy)} fill="var(--rotor)" />)}
+            <path d={bandPath(hub, sx, sy)} fill="var(--body)" stroke="var(--body-line)" strokeWidth={0.75} />
+            <path d={bandPath(casing, sx, sy)} fill="var(--casing)" stroke="var(--casing-line)" strokeWidth={0.75} />
             <line x1={sx(0) - 12} x2={sx(c.length) + 12} y1={sy(0)} y2={sy(0)} stroke="var(--line-strong)" strokeDasharray="8 4 2 4" />
           </g>
 

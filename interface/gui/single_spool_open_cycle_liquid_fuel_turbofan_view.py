@@ -45,7 +45,7 @@ VIEW = EngineView(
     inputs={
         "Inlet": inlet_inputs(base.subsonic_inlet, base.subsonic_inlet_geometry),
         "Fan": fan_inputs(base.fan, base.bypass_ratio),
-        "Compressor": axial_compressor_inputs(base.compressor, base.compressor_geometry),
+        "Compressor": axial_compressor_inputs(base.compressor, base.compressor_geometry, first_rotor=False),
         "Combustor": combustor_inputs(base.combustor),
         "Core nozzle": convergent_nozzle_inputs(base.core_nozzle),
         "Bypass nozzle": convergent_nozzle_inputs(base.bypass_nozzle, key="A_exit_bypass", hi=1.5)},

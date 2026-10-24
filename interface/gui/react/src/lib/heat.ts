@@ -1,11 +1,18 @@
-/* Total temperature -> colour: near-black ember, through orange, to white-hot. */
-const STOPS: [number, [number, number, number]][] = [
+/* Total temperature -> colour. The scale comes from the theme (appearance.ts): on dark themes cold is near-black
+ * and hot white; on light themes cold is pale and hot deep red. */
+export type HeatStops = [number, [number, number, number]][]
+
+let STOPS: HeatStops = [
   [0.0, [38, 20, 12]],
   [0.35, [122, 46, 14]],
   [0.65, [224, 86, 27]],
   [0.85, [255, 157, 77]],
   [1.0, [255, 227, 179]],
 ]
+
+export function setHeatStops(stops: HeatStops) {
+  STOPS = stops
+}
 
 export function heat(t: number): string {
   const u = Math.min(1, Math.max(0, t))
@@ -17,4 +24,4 @@ export function heat(t: number): string {
   return `rgb(${c[0]} ${c[1]} ${c[2]})`
 }
 
-export const HEAT_GRADIENT = `linear-gradient(90deg, ${STOPS.map(([s]) => `${heat(s)} ${s * 100}%`).join(", ")})`
+export const heatGradient = () => `linear-gradient(90deg, ${STOPS.map(([s]) => `${heat(s)} ${s * 100}%`).join(", ")})`

@@ -42,9 +42,6 @@ export function StationReadout({ station, TtRange }: { station: Station; TtRange
           )
         })}
       </dl>
-      <p className="border-t border-line px-4 py-3 text-[11.5px] leading-relaxed text-fg-3">
-        Hover the drawing or the plots to move between stations. “—” means the model does not compute it there.
-      </p>
     </div>
   )
 }

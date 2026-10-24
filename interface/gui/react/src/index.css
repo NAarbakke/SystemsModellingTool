@@ -1,10 +1,13 @@
 @import "tailwindcss";
 
 /*
- * Design tokens. Monochrome on black with hairline borders; the only colour is heat, taken from the engine's
- * total-temperature scale.
+ * Design tokens, one set per theme (<html data-theme>, chosen in the Appearance menu; lib/appearance.ts).
+ * --heat is the accent (static values, the hovered station); the total-temperature scale is in lib/appearance.ts.
+ * The drawing tokens (--rotor ... --annulus) paint the engine and compressor cross-sections.
  */
-:root {
+:root,
+:root[data-theme="graphite"] {
+  color-scheme: dark;
   --bg: #000000;
   --surface: #0a0a0a;
   --surface-2: #111111;
@@ -17,6 +20,133 @@
   --heat-soft: rgb(255 138 61 / 0.12);
   --good: #3ecf8e;
   --bad: #ff5f56;
+  --shadow: rgb(0 0 0 / 0.9);
+
+  --rotor: rgb(237 237 237 / 0.55);
+  --stator: rgb(237 237 237 / 0.18);
+  --body: #111111;
+  --body-line: #262626;
+  --casing: #2a2a2a;
+  --casing-line: #3a3a3a;
+  --dots: #1d1d1d;
+  --rods: rgb(255 255 255 / 0.22);
+  --liner: rgb(255 255 255 / 0.45);
+  --annulus: rgb(255 138 61 / 0.07);
+
+  --app-sans: "Geist Variable", system-ui, sans-serif;
+  --app-mono: "Geist Mono Variable", ui-monospace, monospace;
+}
+
+:root[data-theme="daylight"] {
+  color-scheme: light;
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --surface-2: #f4f4f5;
+  --line: #e6e6e9;
+  --line-strong: #d0d0d6;
+  --fg: #18181b;
+  --fg-2: #52525b;
+  --fg-3: #8a8a93;
+  --heat: #e8590c;
+  --heat-soft: rgb(232 89 12 / 0.10);
+  --good: #16a34a;
+  --bad: #dc2626;
+  --shadow: rgb(24 24 27 / 0.12);
+
+  --rotor: rgb(24 24 27 / 0.50);
+  --stator: rgb(24 24 27 / 0.16);
+  --body: #e4e4e7;
+  --body-line: #c8c8ce;
+  --casing: #d4d4d8;
+  --casing-line: #b8b8c0;
+  --dots: #e2e2e6;
+  --rods: rgb(24 24 27 / 0.25);
+  --liner: rgb(24 24 27 / 0.45);
+  --annulus: rgb(232 89 12 / 0.08);
+}
+
+:root[data-theme="aurora"] {
+  color-scheme: dark;
+  --bg: #07071a;
+  --surface: #0d0d26;
+  --surface-2: #141433;
+  --line: #1f1f45;
+  --line-strong: #2f2f63;
+  --fg: #e9e7ff;
+  --fg-2: #a7a4d6;
+  --fg-3: #6b68a0;
+  --heat: #22d3ee;
+  --heat-soft: rgb(34 211 238 / 0.12);
+  --good: #34d399;
+  --bad: #fb7185;
+  --shadow: rgb(2 2 12 / 0.9);
+
+  --rotor: rgb(233 231 255 / 0.55);
+  --stator: rgb(233 231 255 / 0.18);
+  --body: #0f0f2e;
+  --body-line: #26265a;
+  --casing: #222250;
+  --casing-line: #34346e;
+  --dots: #1a1a40;
+  --rods: rgb(233 231 255 / 0.25);
+  --liner: rgb(233 231 255 / 0.45);
+  --annulus: rgb(167 139 250 / 0.10);
+}
+
+:root[data-theme="academic"] {
+  color-scheme: light;
+  --bg: #f6f1e7;
+  --surface: #fbf8f2;
+  --surface-2: #efe8da;
+  --line: #e2d9c6;
+  --line-strong: #c9bca2;
+  --fg: #1f1a14;
+  --fg-2: #4d4337;
+  --fg-3: #8a7d6a;
+  --heat: #8c1d18;
+  --heat-soft: rgb(140 29 24 / 0.08);
+  --good: #2f6b3a;
+  --bad: #a61b1b;
+  --shadow: rgb(60 45 25 / 0.15);
+
+  --rotor: rgb(31 26 20 / 0.55);
+  --stator: rgb(31 26 20 / 0.16);
+  --body: #e6dccb;
+  --body-line: #bfae90;
+  --casing: #d8cbb3;
+  --casing-line: #a8977a;
+  --dots: #e3d9c5;
+  --rods: rgb(31 26 20 / 0.28);
+  --liner: rgb(31 26 20 / 0.45);
+  --annulus: rgb(140 29 24 / 0.06);
+}
+
+:root[data-theme="blueprint"] {
+  color-scheme: dark;
+  --bg: #0b2545;
+  --surface: #0e2c52;
+  --surface-2: #12355f;
+  --line: rgb(230 240 255 / 0.12);
+  --line-strong: rgb(230 240 255 / 0.24);
+  --fg: #e6f0ff;
+  --fg-2: #a9c1e3;
+  --fg-3: #6f8fbb;
+  --heat: #ffd166;
+  --heat-soft: rgb(255 209 102 / 0.14);
+  --good: #6ee7b7;
+  --bad: #ff8a80;
+  --shadow: rgb(3 14 30 / 0.8);
+
+  --rotor: rgb(230 240 255 / 0.60);
+  --stator: rgb(230 240 255 / 0.20);
+  --body: #0d2b50;
+  --body-line: rgb(230 240 255 / 0.55);
+  --casing: #12355f;
+  --casing-line: rgb(230 240 255 / 0.55);
+  --dots: rgb(230 240 255 / 0.10);
+  --rods: rgb(230 240 255 / 0.30);
+  --liner: rgb(230 240 255 / 0.55);
+  --annulus: rgb(255 209 102 / 0.08);
 }
 
 @theme inline {
@@ -32,22 +162,23 @@
   --color-heat-soft: var(--heat-soft);
   --color-good: var(--good);
   --color-bad: var(--bad);
-  --font-sans: "Geist Variable", system-ui, sans-serif;
-  --font-mono: "Geist Mono Variable", ui-monospace, monospace;
+  --color-shadow: var(--shadow);
+  --font-sans: var(--app-sans);
+  --font-mono: var(--app-mono);
 }
 
 @layer base {
-  html { color-scheme: dark; }
   body {
     @apply bg-bg text-fg font-sans antialiased;
     font-feature-settings: "ss01", "cv11";
+    transition: background-color 150ms, color 150ms;
   }
   ::selection { background: var(--heat-soft); color: var(--fg); }
 }
 
 /* Small uppercase mono label used for section and group headings */
 @utility eyebrow {
-  font-family: var(--font-mono);
+  font-family: var(--app-mono);
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -55,6 +186,6 @@
 }
 
 @utility tabular {
-  font-family: var(--font-mono);
+  font-family: var(--app-mono);
   font-variant-numeric: tabular-nums;
 }
