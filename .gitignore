@@ -55,3 +55,12 @@ node_modules/
 
 # Generated reports
 reports/output/
+
+# Logs and simulation results (placeholder .gitkeep files stay tracked)
+logs/*
+!logs/.gitkeep
+systems/**/results/*
+!systems/**/results/.gitkeep
+
+# Local file paths (template: documentation/file_paths_example.py)
+documentation/file_paths.py

@@ -1,0 +1,1 @@
+# put specific impulse stuff currently in ss-n-33 tsirkon.py here?

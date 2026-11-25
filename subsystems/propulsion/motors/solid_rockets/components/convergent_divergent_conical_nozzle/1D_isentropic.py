@@ -1,0 +1,1 @@
+#use isentropic assumption, ie. use equations from scratch and not CEA

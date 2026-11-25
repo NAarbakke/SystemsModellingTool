@@ -1,0 +1,52 @@
+reflect the engineering of a system as accurately as possible -- type of sys modelled in focus
+or keep it as it is -- feature/function/phenomenon in each folder
+
+
+
+
+systems
+- BM
+- CM
+-- base class.py neccessary?
+-- SKYF
+--- specs
+----- 
+--- setup.py
+--- initial_conditions.py
+--- class.py
+--- results
+---- aerodynamic_parameters.csv
+---- simulation_results.csv
+
+
+subsystems
+- prop
+-- 
+- gnc
+-- g
+-- n
+-- c
+--- stability
+--- controllers
+- warhead
+- airframe
+-- aerodynamics
+-- thermodynamics
+-- stability ---- in analysis
+
+
+
+simulation
+- integrators
+- setup
+
+
+main.py
+
+
+data        # add to gitignore
+- results
+-- figures
+-- store all computed data here?
+- imports
+-- store all imported data here

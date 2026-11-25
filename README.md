@@ -6,25 +6,35 @@ cruise vehicles) and their propulsion, GNC, and actuation subsystems.
 The code is organised to mirror the physical hierarchy of the vehicles it
 models: parts → subcomponents → subsystems → systems.
 
+Purpose of the flight tool: reveal whether systems max out their manoeuvrability,
+speed, etc. in test firings or have margin left (collected data alone won't show
+this), give more complete velocity profiles, and build understanding of systems
+without detailed collection yet.
+
 ```
-systems/          Top-level vehicle assemblies (e.g. cruise_missile.py)
+systems/          Top-level vehicle assemblies (e.g. cruise_missile.py) and per-system
+                    folders (missiles/, torpedoes/, satellites/, seekers/, propulsion/)
 subsystems/        Physical subsystems the systems are built from
-  actuators/        Fins, TVC, RCS
+  actuators/        Fins, TVC, RCS, jet vanes
+  body/              Airframe: aerodynamics, flight dynamics (EoMs), structures, thermodynamics
   dynamics/          Equations of motion
   gnc/               Guidance, Navigation, Control
   propulsion/        Engine components (inlets, compressors, turbines,
                       combustors, heat exchangers, reactors, nozzles, ...)
                       and assembled turbofan/rocket motor models
+  warhead/
 specifications/     Per-vehicle spec/parameter sets (e.g. SKYF/)
+analysis/           Studies: trajectory, stability, detection, combustion, range, ...
+environment/        Atmosphere models and physical constants
+properties/         Shared fluid, material and propellant property data
+tools/              Integrators (RK4, forward Euler), conversions, data import, database IO
 verifier/           Simulation/model verification tooling
-materials/           Shared material property data
 graphics/           Engine layout geometry (to scale) for the dashboard
 interface/          FastAPI server (api/) and the React dashboard (gui/react/)
 reports/            PDF engineering reports (LaTeX + pgfplots)
-documentation/      Architecture, conventions, and theory documentation;
+documentation/      Architecture, conventions, theory and guides;
                       requirements.txt; workflow/ task notes (todo.md, lessons.md)
 ```
-
 ## Setup
 
 Dependencies are listed in **`documentation/requirements.txt`** and are installed

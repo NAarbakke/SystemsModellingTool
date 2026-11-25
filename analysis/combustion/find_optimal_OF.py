@@ -1,0 +1,1 @@
+#solve for optimal OF using cea given a fuel, ox, and P_c

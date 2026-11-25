@@ -94,6 +94,18 @@ Conventions: @documentation/codebase/conventions.md
 - Three front ends, one function (`reports.build.build_report`): CLI `python -m reports.build`, TUI `python -m interface.tui.reports_app` (Textual), and `POST /api/engines/{id}/report` behind the dashboard's "Export report" button.
 
 
+# Purpose
+Tool for systems modelling of weapon systems (missiles, torpedoes, satellites). Both the subsystems and the overall
+system can be modelled and simulated. Mindset: a systems engineer's. Every modelled system is made of smaller systems,
+which can be modelled in turn.
+
+# Codebase logic
+- `subsystems/`: the physics of every component needed to model a system (body, propulsion, gnc, actuators, warhead, ...)
+- `systems/`: the unique architecture of each system (e.g. `systems/missiles/<name>/`), built from `subsystems/`
+- `properties/`, `environment/`: generic material, fluid and propellant properties, and atmosphere/constants, shared by all models
+- `analysis/`: frameworks and code for each type of analysis
+- `tools/`: utilities (numerical integrators, unit conversions, data import, database IO)
+
 ## Project Specific Guidelines
 
 Give engine architeture examples so claude.md understands my logic in terms of framework/code logic architecture- modular systems modelling approach

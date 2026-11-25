@@ -1,0 +1,9 @@
+{
+    "governing_equations": "flat_earth_3dof_eom",
+    "integrator": "runge_kutta_4th",
+    "time_step": 0.1,
+    "time_start": 0.0,
+    "time_end": 6.0,
+
+    "gnc": "yes"
+}

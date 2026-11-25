@@ -1,3 +1,48 @@
+# Migrate `U_SystemsModellingTool/` into the main repo
+
+User (2026-11-25): migrate all files and placeholder folders in `U_SystemsModellingTool/` into the other folders.
+Decisions (user, 2026-11-25): keep the U_ `subsystems/body/` breakdown (not `dynamics/`); integrators -> `tools/integrators/`; root CLAUDE.md/README get the U_ purpose + codebase logic; delete the matplotlib/Plotly plotting scripts; keep each system folder together under
+`systems/`; move files only (imports are not rewritten, so moved modules keep U_-layout import paths for now).
+
+## Plan
+- [x] Backup: `../U_SystemsModellingTool_backup_2026-11-25.tar.gz` (outside the repo; no git here)
+- [x] Drop: `__pycache__/`, top-level empty `__init__.py`, `graphics/` (plotting), `interface/{cli,gui,tui}.py` +
+      `main_run.py` (comment stubs, superseded by `interface/`), `verification/` (-> `verifier/` exists),
+      `gnc/control/PID_controller.py` (stub; `pid.py` exists), placeholders already in main
+      (`environment/{ocean,gravity,wind}`, `properties/{fluids,materials}`, `gnc/navigation`,
+      `actuators/{fins,tvc,rct}`, `propulsion/components/nozzles`), empty `theory/nomenclature.md`
+- [x] `analysis/*` -> `analysis/*` (no collisions; incl. placeholders cfd, full_pipeline, controller_stability, combustion/cantera, openFOAM)
+- [x] `integrators/` -> `tools/integrators/`
+- [x] `environment/constants.py`, `environment/atmosphere/get_environmental_conditions.py` -> `environment/`
+- [x] `properties/propellants/` -> `properties/propellants/`
+- [x] `tools/` -> `tools/` (new top-level folder)
+- [x] `systems/{missiles,torpedoes,satellites,seekers,propulsion}/` -> `systems/` (each system kept together)
+- [x] `subsystems/body/` moved whole (flight_dynamics, aerodynamics, types, structural_mechanics, thermodynamics, orbital_mechanics)
+- [x] `subsystems/gnc/guidance/proportional.py`, `gnc/control/LQR_controller.py` -> `subsystems/gnc/...`
+- [x] `subsystems/warhead/`, `actuators/jet_vanes/` placeholders -> `subsystems/`
+- [x] Propulsion: `motors/solid_rocket/*` -> `motors/solid_rockets/` (components, grain_geometries, loss_corrections,
+      solid_rocket*.py, motor_state.py, parameters.py; `1D_quasi??.py` renamed `1D_quasi.py`);
+      `liquid_rocket/0D.py` -> `motors/liquid_rockets/`; `generic_rocket/` -> `motors/generic_rockets/`;
+      `shared/flow_state.py` -> `motors/helpers/rocket_flow_state.py` (static-based; name clashes with the total-based
+      `helpers/flow_state.py`); `shared/simulation_log.py` -> `motors/helpers/`
+- [x] Docs: U `codebase/{architecture,conventions,structure}.md` replace main's empty (`#`) files; U CLAUDE.md
+      purpose/mindset/codebase logic -> root CLAUDE.md; U README purpose notes + new folders -> root README.md; `structure_proposition.txt` ->
+      `documentation/codebase/`; `guides/` -> `documentation/guides/`; obs-vault note -> `documentation/theory/`;
+      U `todo.md` appended to `documentation/todo.md`; `file_paths*.py` -> `documentation/`. Generic Karpathy
+      guidelines and old setup/usage paths dropped (root CLAUDE.md covers them).
+- [x] Requirements unchanged (pinned file); list packages the moved code needs (scipy, CoolProp, ussa1976, cea) in Review
+- [x] Delete `U_SystemsModellingTool/`; verify every U file is placed or deliberately dropped; README mentions `tools/`
+
+## Review
+- Backup check: all 374 backup entries listed; every U_ file was found byte-identical in the repo, except the deliberate
+  drops/merges above and two renames (`rocket_flow_state.py`, `1D_quasi.py`), which were checked with `cmp`. All placeholder folders are present.
+- Created `.venv` (Linux, none existed) from `documentation/requirements.txt`; `interface.cli.run --engine nuclear_turbofan`
+  runs (32.81 kN) and `reports.build` and `interface.api.app` import.
+- Moved code still uses U_-layout imports (e.g. `integrators.runge_kutta_4`, `subsystems.propulsion.shared.flow_state`,
+  `graphics.plots.*` (deleted)) and needs packages not in requirements: scipy, CoolProp, ussa1976, cea.
+
+---
+
 # PDF engineering reports (academic style) - `reports/`
 
 User (2026-10-19): generate PDF reports with nice plots and figures in an academic style, like an engineering report.

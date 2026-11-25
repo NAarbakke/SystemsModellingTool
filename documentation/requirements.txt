@@ -9,3 +9,6 @@ jinja2==3.1.6
 markupsafe==3.0.4
 textual==8.2.8
 rich==15.0.0
+cea==3.3.4
+h5py==3.16.0
+ussa1976==0.3.4
