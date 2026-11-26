@@ -1,2 +1,0 @@
-#guidance command
-#controller gains
