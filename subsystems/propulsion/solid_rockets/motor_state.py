@@ -19,6 +19,3 @@ class MotorState:
     r_burn: float               # Regression depth [m]
     A_burn: float               # Burn area [m^2]
     r_dot_burn: float           # Burn rate [m/s]
-
-    # Performance
-    c_star: float               # Characteristic velocity [m/s]
